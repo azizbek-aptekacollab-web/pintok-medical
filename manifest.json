@@ -1,0 +1,24 @@
+{
+  "name": "Пинток Медикал — Аптеки",
+  "short_name": "Пинток Медикал",
+  "description": "Мобильное приложение сети аптек «Пинток Медикал» — 4 филиала: Чимбай, Ходжейли, Нукус",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#059669",
+  "icons": [
+    {
+      "src": "logo-apteka.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo-apteka.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

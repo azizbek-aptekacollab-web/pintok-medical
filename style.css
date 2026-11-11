@@ -1,0 +1,1807 @@
+/* ==========================================================================
+   СЕТЬ АПТЕК «ПИНТОК МЕДИКАЛ» — ОФИЦИАЛЬНАЯ ПАНЕЛЬ УПРАВЛЕНИЯ
+   Дизайн: Чистый белый медицинский фон (White Clinical & Modern Light)
+   Язык интерфейса: Русский
+   Регламент: 08:00 – 18:00 | Штраф за опоздание: 10 000 сум за каждые 5 мин
+   PWA & Мобильная поддержка + ИИ-помощник Antigravity (Floating Button)
+   ========================================================================== */
+
+:root {
+  /* Чистый белый и ультра-светлый медицинский фон */
+  --bg-body: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-alt: #f1f5f9;
+  --bg-subtle: #f8fafc;
+  --bg-hover: #f1f5f9;
+
+  /* Медицинские фармацевтические акценты */
+  --primary: #059669;        /* Изумрудный аптечный */
+  --primary-hover: #047857;
+  --primary-light: #ecfdf5;
+  --primary-border: #a7f3d0;
+
+  --secondary: #0284c7;      /* Клинический голубой */
+  --secondary-hover: #0369a1;
+  --secondary-light: #f0f9ff;
+  --secondary-border: #bae6fd;
+
+  --accent-gold: #d97706;    /* Золото для лидеров */
+  --accent-gold-light: #fffbeb;
+  --accent-gold-border: #fde68a;
+
+  --danger: #dc2626;
+  --danger-light: #fef2f2;
+  --danger-border: #fecaca;
+
+  --success: #16a34a;
+  --success-light: #f0fdf4;
+  --success-border: #bbf7d0;
+
+  --ai-purple: #6366f1;
+  --ai-violet: #8b5cf6;
+
+  /* Высококонтрастная типографика */
+  --text-title: #0f172a;     /* Тёмный угольный */
+  --text-body: #334155;      /* Читабельный тёмно-серый */
+  --text-muted: #64748b;     /* Второстепенный */
+  --text-light: #94a3b8;     /* Неактивный */
+
+  /* Границы и тени */
+  --border-light: #e2e8f0;
+  --border-card: #e2e8f0;
+  --border-focus: #059669;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 16px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 10px 25px -3px rgba(15, 23, 42, 0.09), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
+  --shadow-modal: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-body);
+  color: var(--text-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Контейнер */
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ==========================================================================
+   ШАПКА (HEADER) — БЕЛЫЙ МЕДИЦИНСКИЙ СТИЛЬ
+   ========================================================================== */
+.site-header {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-light);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.brand-logo-img {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-text h1 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-title);
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand-text h1 span.badge-official {
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-border);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+}
+
+.brand-text p {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Центр шапки: Интерактивный Календарь и Дата */
+.date-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  padding: 6px 10px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+}
+
+.date-nav-btn {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-body);
+  font-weight: bold;
+  transition: all 0.15s ease;
+}
+
+.date-nav-btn:hover {
+  background: var(--bg-hover);
+  border-color: #cbd5e1;
+}
+
+.date-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.date-input-wrap input[type="date"] {
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-title);
+  background: transparent;
+  outline: none;
+  cursor: pointer;
+}
+
+.quick-date-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quick-date-btn:hover {
+  background: #ffffff;
+  border-color: var(--border-light);
+  color: var(--text-title);
+}
+
+.quick-date-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* Правая часть: Кнопки интеграций и экспорта */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: #ffffff;
+  border-color: var(--border-light);
+  color: var(--text-title);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-hover);
+  border-color: #cbd5e1;
+}
+
+.btn-pwa {
+  background: linear-gradient(135deg, #ede9fe 0%, #f0fdf4 100%);
+  color: #6d28d9;
+  border-color: #c4b5fd;
+  font-weight: 700;
+}
+
+.btn-pwa:hover {
+  background: #ddd6fe;
+}
+
+.btn-camera {
+  background: var(--secondary-light);
+  color: var(--secondary);
+  border-color: var(--secondary-border);
+}
+
+.btn-camera:hover {
+  background: #e0f2fe;
+}
+
+.btn-f-apteka {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary-border);
+}
+
+.btn-f-apteka:hover {
+  background: #d1fae5;
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* ==========================================================================
+   БАННЕР РЕГЛАМЕНТА СМЕНЫ И ШТРАФОВ ЗА ОПОЗДАНИЕ
+   ========================================================================== */
+.rules-banner {
+  background: #ffffff;
+  border: 1px solid #fed7aa;
+  border-left: 4px solid #ea580c;
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  flex-wrap: wrap;
+}
+
+.rules-banner-text {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-title);
+  flex-wrap: wrap;
+}
+
+.rules-badge-clock {
+  background: #fff7ed;
+  color: #c2410c;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  border: 1px solid #ffedd5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rules-penalty-info {
+  background: #fef2f2;
+  color: #dc2626;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  border: 1px solid #fecaca;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ==========================================================================
+   ОБЩАЯ СВОДКА ПО 4 ФИЛИАЛАМ ЗА 1 ДЕНЬ
+   ========================================================================== */
+.main-content {
+  padding: 20px 0 70px;
+}
+
+.network-summary-section {
+  background: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 30px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.section-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border: 1px solid var(--primary-border);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-title);
+  letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.network-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--border-light);
+}
+
+.metric-card.accent-green::before { background: var(--primary); }
+.metric-card.accent-blue::before { background: var(--secondary); }
+.metric-card.accent-purple::before { background: #8b5cf6; }
+.metric-card.accent-gold::before { background: var(--accent-gold); }
+.metric-card.accent-red::before { background: #dc2626; }
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: #cbd5e1;
+}
+
+.metric-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.metric-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metric-icon-small {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-title);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.metric-value span.unit {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+.metric-sub {
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge-trend {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.badge-trend.up {
+  background: var(--success-light);
+  color: var(--success);
+  border: 1px solid var(--success-border);
+}
+
+/* Доля филиалов в выручке */
+.network-breakdown {
+  background: var(--bg-card-alt);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  border: 1px solid var(--border-light);
+}
+
+.breakdown-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-title);
+}
+
+.breakdown-bars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.branch-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.branch-bar-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.branch-bar-info .name {
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.branch-bar-info .share {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.progress-track {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-fill.branch-1 { background: #059669; }
+.progress-fill.branch-2 { background: #0284c7; }
+.progress-fill.branch-3 { background: #8b5cf6; }
+.progress-fill.branch-4 { background: #d97706; }
+
+/* ==========================================================================
+   ФИЛЬТРЫ И ВКЛАДКИ ФИЛИАЛОВ
+   ========================================================================== */
+.branches-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.branch-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.branch-tab-btn {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-body);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.branch-tab-btn:hover {
+  background: var(--bg-hover);
+  border-color: #cbd5e1;
+}
+
+.branch-tab-btn.active {
+  background: var(--text-title);
+  border-color: var(--text-title);
+  color: #ffffff;
+}
+
+.branch-tab-btn .count-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  background: #f1f5f9;
+  color: var(--text-muted);
+}
+
+.branch-tab-btn.active .count-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.search-input-wrap {
+  position: relative;
+  min-width: 260px;
+}
+
+.search-input-wrap input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  font-size: 13px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  outline: none;
+  font-family: inherit;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-input-wrap input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+.search-input-wrap .search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* ==========================================================================
+   СЕКЦИИ 4 ФИЛИАЛОВ (КАРТОЧКА ФИЛИАЛА)
+   ========================================================================== */
+.branch-block {
+  background: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+}
+
+.branch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.branch-title-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.branch-badge-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.branch-1-color { background: linear-gradient(135deg, #059669, #10b981); }
+.branch-2-color { background: linear-gradient(135deg, #0284c7, #38bdf8); }
+.branch-3-color { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+.branch-4-color { background: linear-gradient(135deg, #d97706, #fbbf24); }
+
+.branch-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-title);
+  letter-spacing: -0.02em;
+}
+
+.branch-address {
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+/* Показатели филиала за день */
+.branch-stats-pills {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  display: flex;
+  flex-direction: column;
+  min-width: 125px;
+}
+
+.stat-pill .label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.stat-pill .value {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-title);
+}
+
+.stat-pill.highlight {
+  background: var(--primary-light);
+  border-color: var(--primary-border);
+}
+
+.stat-pill.highlight .label {
+  color: var(--primary);
+}
+
+.stat-pill.highlight .value {
+  color: var(--primary-hover);
+}
+
+.stat-pill.pill-penalty {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.stat-pill.pill-penalty .label {
+  color: #dc2626;
+}
+
+.stat-pill.pill-penalty .value {
+  color: #b91c1c;
+}
+
+/* Карточки сотрудников */
+.pharmacists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 18px;
+}
+
+.pharmacist-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.pharmacist-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.pharm-top-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pharm-avatar-wrap {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+}
+
+.pharm-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pharm-status-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+.status-active { background: #16a34a; }
+.status-done { background: #64748b; }
+.status-late { background: #dc2626; }
+
+.pharm-info {
+  flex-grow: 1;
+}
+
+.pharm-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-title);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pharm-role {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pharm-staj {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--secondary);
+  background: var(--secondary-light);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+  margin-top: 2px;
+}
+
+/* Табель учёта рабочего времени (Приход и Уход) */
+.time-attendance-box {
+  background: var(--bg-card-alt);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  border: 1px solid var(--border-light);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.time-slot {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-slot .time-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.time-slot .time-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-title);
+}
+
+.time-slot.arrived .time-val { color: var(--primary); }
+.time-slot.late .time-val { color: #dc2626; }
+.time-slot.departed .time-val { color: var(--secondary); }
+
+/* Бейджи опозданий и штрафов */
+.penalty-badge {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fca5a5;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: 0 1px 2px rgba(220, 38, 38, 0.05);
+}
+
+.penalty-badge .amount {
+  font-size: 12px;
+  font-weight: 800;
+  color: #dc2626;
+  white-space: nowrap;
+}
+
+.punctual-badge {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #86efac;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Дневные результаты продаж фармацевта */
+.pharm-metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  border-top: 1px dashed var(--border-light);
+  padding-top: 10px;
+}
+
+.pharm-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.pharm-stat-item .lbl {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.pharm-stat-item .val {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-title);
+}
+
+.pharm-stat-item.sales .val {
+  color: var(--primary);
+}
+
+/* ==========================================================================
+   НИЖНИЙ БЛОК ЛИДЕРОВ (РЕЙТИНГ И НАГРАДЫ)
+   ========================================================================== */
+.leaders-section {
+  background: #ffffff;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xl);
+  padding: 26px;
+  box-shadow: var(--shadow-card);
+  margin-top: 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+.leaders-section::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #d97706, #059669, #0284c7, #16a34a);
+}
+
+.leaders-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.leader-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 20px 16px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.leader-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.leader-card.gold-leader {
+  border-color: var(--accent-gold-border);
+  background: linear-gradient(180deg, #fffdf5 0%, #ffffff 100%);
+}
+
+.leader-card.blue-leader {
+  border-color: var(--secondary-border);
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+}
+
+.leader-card.green-leader {
+  border-color: var(--primary-border);
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.leader-card.punctual-leader {
+  border-color: #86efac;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+.cup-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.cup-badge.gold { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; }
+.cup-badge.silver { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.cup-badge.bronze { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+.cup-badge.clock { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+
+.leader-avatar-wrap {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  margin-bottom: 12px;
+  padding: 3px;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.leader-card.gold-leader .leader-avatar-wrap { border-color: #f59e0b; }
+.leader-card.blue-leader .leader-avatar-wrap { border-color: #0284c7; }
+.leader-card.green-leader .leader-avatar-wrap { border-color: #059669; }
+.leader-card.punctual-leader .leader-avatar-wrap { border-color: #16a34a; }
+
+.leader-avatar-wrap img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.leader-nomination {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  margin-bottom: 8px;
+}
+
+.gold-leader .leader-nomination { background: #fef3c7; color: #b45309; }
+.blue-leader .leader-nomination { background: #e0f2fe; color: #0369a1; }
+.green-leader .leader-nomination { background: #d1fae5; color: #047857; }
+.punctual-leader .leader-nomination { background: #dcfce7; color: #15803d; }
+
+.leader-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-title);
+  margin-bottom: 2px;
+}
+
+.leader-branch {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.leader-metric-box {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.leader-metric-box .metric-num {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-title);
+}
+
+.gold-leader .leader-metric-box .metric-num { color: #d97706; }
+.blue-leader .leader-metric-box .metric-num { color: #0284c7; }
+.green-leader .leader-metric-box .metric-num { color: #059669; }
+.punctual-leader .leader-metric-box .metric-num { color: #16a34a; }
+
+.leader-metric-box .metric-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   КРУГЛАЯ КНОПКА (ДОМАЛАҚ КНОПКА) — ИИ-ПОМОЩНИК ANTIGRAVITY
+   ========================================================================== */
+.ai-fab-wrap {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.ai-fab-tooltip {
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+  animation: bounceHint 2.2s infinite;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@keyframes bounceHint {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.ai-fab-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
+  border: 3px solid #ffffff;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 25px -3px rgba(99, 102, 241, 0.55), 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  outline: none;
+}
+
+.ai-fab-btn:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 14px 30px -2px rgba(99, 102, 241, 0.65);
+}
+
+.ai-fab-btn:active {
+  transform: scale(0.95);
+}
+
+.ai-fab-icon {
+  font-size: 28px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+}
+
+.ai-fab-pulse {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  border: 2px solid #8b5cf6;
+  opacity: 0;
+  animation: aiPulse 2.4s infinite;
+  pointer-events: none;
+}
+
+@keyframes aiPulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* ==========================================================================
+   ОКНО ЧАТА С ИИ ANTIGRAVITY (AI CHAT DRAWER)
+   ========================================================================== */
+.ai-chat-drawer {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  width: 410px;
+  max-width: calc(100vw - 32px);
+  height: 600px;
+  max-height: calc(100vh - 120px);
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(99, 102, 241, 0.2);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ai-chat-drawer.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.ai-chat-header {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  color: #ffffff;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ai-header-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ai-avatar-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.ai-header-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.ai-header-status {
+  font-size: 11px;
+  color: #c7d2fe;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ai-header-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+}
+
+.ai-close-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ai-close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Сообщения в чате */
+.ai-chat-body {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-bubble {
+  max-width: 88%;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.48;
+  border-radius: 14px;
+  word-wrap: break-word;
+}
+
+.chat-bubble.bot {
+  background: #ffffff;
+  color: var(--text-title);
+  border: 1px solid #e2e8f0;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  align-self: flex-start;
+}
+
+.chat-bubble.user {
+  background: #4f46e5;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+}
+
+/* Быстрые подсказки */
+.ai-quick-chips {
+  padding: 8px 14px;
+  background: #ffffff;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.quick-chip-btn {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: var(--text-body);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.quick-chip-btn:hover {
+  background: #ede9fe;
+  color: #6d28d9;
+  border-color: #c4b5fd;
+}
+
+/* Поле ввода */
+.ai-chat-input-row {
+  padding: 12px 14px;
+  background: #ffffff;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  gap: 8px;
+}
+
+.ai-chat-input-row input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  outline: none;
+  font-family: inherit;
+}
+
+.ai-chat-input-row input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.ai-send-btn {
+  background: #4f46e5;
+  color: #ffffff;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: background 0.15s;
+}
+
+.ai-send-btn:hover {
+  background: #4338ca;
+}
+
+/* ==========================================================================
+   МОДАЛЬНЫЕ ОКНА (ИНТЕГРАЦИЯ С КАМЕРАМИ, F-АПТЕКА И УСТАНОВКА НА ТЕЛЕФОН)
+   ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-card {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  max-width: 780px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--border-light);
+  position: relative;
+  transform: scale(0.95);
+  transition: transform 0.2s ease;
+}
+
+.modal-backdrop.active .modal-card {
+  transform: scale(1);
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-title);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-title);
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  background: var(--bg-subtle);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+
+/* Сетка камер */
+.cameras-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.camera-preview-card {
+  background: #0f172a;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+.camera-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cam-badge-live {
+  background: #16a34a;
+  color: #ffffff;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.camera-preview-screen {
+  background: #1e293b;
+  border-radius: var(--radius-sm);
+  height: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 12px;
+  gap: 6px;
+  border: 1px dashed #334155;
+  position: relative;
+}
+
+.camera-preview-screen .cam-face-box {
+  width: 44px;
+  height: 44px;
+  border: 2px solid #10b981;
+  border-radius: 6px;
+  position: absolute;
+  animation: scanBox 2s infinite alternate;
+}
+
+@keyframes scanBox {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.05); opacity: 1; }
+}
+
+.camera-preview-footer {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #94a3b8;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Лог событий распознавания лиц */
+.face-log-box {
+  background: var(--bg-card-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 14px;
+}
+
+.face-log-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-title);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.face-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.face-log-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  font-size: 12px;
+}
+
+.face-log-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: var(--text-title);
+}
+
+.face-log-time {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+/* Формы настроек API */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-title);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 9px 12px;
+  font-size: 13px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  font-family: inherit;
+  outline: none;
+}
+
+.form-group input:focus, .form-group select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+}
+
+.sync-status-card {
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.sync-status-card .info h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary-hover);
+}
+
+.sync-status-card .info p {
+  font-size: 12px;
+  color: var(--text-body);
+}
+
+/* ==========================================================================
+   ФУТЕР
+   ========================================================================== */
+.site-footer {
+  background: #ffffff;
+  border-top: 1px solid var(--border-light);
+  padding: 24px 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ПЕЧАТЬ (Z-ОТЧЕТ) */
+@media print {
+  .site-header, .branches-toolbar, .header-actions, .modal-backdrop, .site-footer, .rules-banner, .ai-fab-wrap, .ai-chat-drawer {
+    display: none !important;
+  }
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
+  .network-summary-section, .branch-block, .leaders-section {
+    border: 1px solid #ccc;
+    box-shadow: none;
+    page-break-inside: avoid;
+  }
+}
+
+/* АДАПТИВНОСТЬ */
+@media (max-width: 1200px) {
+  .network-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .leaders-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .network-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .breakdown-bars-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .leaders-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .network-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .breakdown-bars-grid {
+    grid-template-columns: 1fr;
+  }
+  .pharmacists-grid {
+    grid-template-columns: 1fr;
+  }
+  .cameras-grid {
+    grid-template-columns: 1fr;
+  }
+  .ai-fab-wrap {
+    bottom: 16px;
+    right: 16px;
+  }
+  .ai-chat-drawer {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: 84px;
+    height: calc(100vh - 110px);
+  }
+}

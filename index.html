@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ПИНТОК МЕДИКАЛ — Единая панель управления сетью аптек</title>
+  
+  <!-- PWA & Мобильные теги -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#059669" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Пинток Медикал" />
+  <link rel="apple-touch-icon" href="logo-apteka.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ======================================================================
+       ШАПКА (HEADER) — БЕЛЫЙ МЕДИЦИНСКИЙ СТИЛЬ
+       ====================================================================== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand-wrap">
+        <img src="logo-apteka.jpg" alt="Пинток Медикал" class="brand-logo-img" onerror="this.style.display='none'" />
+        <div class="brand-text">
+          <h1>
+            ПИНТОК МЕДИКАЛ
+            <span class="badge-official">Официальная сеть</span>
+          </h1>
+          <p>Единый мониторинг аптек · 4 филиала: Чимбай (Бескала), Чимбай (Базар), Ходжейли, Нукус</p>
+        </div>
+      </div>
+
+      <!-- Календарь для выбора любой даты -->
+      <div class="date-selector-bar">
+        <button type="button" class="date-nav-btn" onclick="changeDateByOffset(-1)" title="Предыдущий день">◀</button>
+        <div class="date-input-wrap">
+          <span>📅</span>
+          <input type="date" id="workDatePicker" title="Выберите дату для просмотра отчета" />
+        </div>
+        <button type="button" class="date-nav-btn" onclick="changeDateByOffset(1)" title="Следующий день">▶</button>
+        
+        <button type="button" class="quick-date-btn active" id="btnDateToday" onclick="setDate(getTodayString())">Сегодня</button>
+        <button type="button" class="quick-date-btn" id="btnDateYest" onclick="changeDateByOffset(-1)">Вчера</button>
+      </div>
+
+      <!-- Действия, PWA и интеграции -->
+      <div class="header-actions">
+        <button type="button" class="btn btn-pwa" onclick="openPwaModal()" title="Установить приложение на телефон">
+          <span>📱</span>
+          <span>На телефон</span>
+        </button>
+        <button type="button" class="btn btn-camera" onclick="openCamerasModal()">
+          <span class="pulse-dot"></span>
+          <span>Камеры СКУД</span>
+        </button>
+        <button type="button" class="btn btn-f-apteka" onclick="openFAptekaModal()">
+          <span>🔄</span>
+          <span>F-Аптека</span>
+        </button>
+        <button type="button" class="btn btn-secondary" onclick="exportToExcel()" title="Скачать таблицу в формате Excel">
+          <span>📊 Excel</span>
+        </button>
+        <button type="button" class="btn btn-primary" onclick="window.print()" title="Распечатать дневной Z-отчет">
+          <span>🖨 Печать</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ======================================================================
+       ОСНОВНОЙ КОНТЕНТ (MAIN CONTENT)
+       ====================================================================== -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- БАННЕР РЕГЛАМЕНТА РАБОЧЕГО ВРЕМЕНИ И АВТОМАТИЧЕСКИХ ШТРАФОВ -->
+      <div class="rules-banner">
+        <div class="rules-banner-text">
+          <span class="rules-badge-clock">⏰ Регламент смены: 08:00 – 18:00</span>
+          <span>Приход строго в <strong>08:00</strong> • Окончание смены в <strong>18:00</strong>.</span>
+        </div>
+        <div class="rules-penalty-info">
+          <span>⚠️ 08:00-ден кешиккенлерге: ҳәр 5 минут ушын 10 000 сум автомат штраф</span>
+        </div>
+      </div>
+
+      <!-- 1. ОБЩАЯ СВОДКА ПО ВСЕМ 4 ФИЛИАЛАМ ЗА 1 ДЕНЬ -->
+      <section class="network-summary-section">
+        <div class="section-head">
+          <div class="section-title-wrap">
+            <div class="section-icon">📈</div>
+            <div>
+              <h2 class="section-title">ОБЩАЯ СВОДКА СЕТИ ЗА ВЫБРАННЫЙ ДЕНЬ (4 ФИЛИАЛА)</h2>
+              <p class="section-subtitle">Сводные показатели дневной выручки, чеков, покупателей и контроля дисциплины</p>
+            </div>
+          </div>
+          <div style="font-size:12px; font-weight:700; color:#059669; background:#ecfdf5; padding:4px 10px; border-radius:9999px; border:1px solid #a7f3d0;">
+            🟢 Все 4 филиала открыты · 12 фармацевтов на смене
+          </div>
+        </div>
+
+        <div class="network-metrics-grid">
+          <!-- Общая выручка -->
+          <div class="metric-card accent-green">
+            <div class="metric-label-row">
+              <span class="metric-label">Общая выручка за день</span>
+              <span class="metric-icon-small">💰</span>
+            </div>
+            <div class="metric-value" id="netTotalSales">0 <span class="unit">сум</span></div>
+            <div class="metric-sub">
+              <span class="badge-trend up">↑ +8.4%</span>
+              <span>к прошлой неделе</span>
+            </div>
+          </div>
+
+          <!-- Общее количество чеков -->
+          <div class="metric-card accent-blue">
+            <div class="metric-label-row">
+              <span class="metric-label">Общее число чеков</span>
+              <span class="metric-icon-small">🧾</span>
+            </div>
+            <div class="metric-value" id="netTotalChecks">0 <span class="unit">чеков</span></div>
+            <div class="metric-sub">
+              <span>Суммарно пробито через кассы</span>
+            </div>
+          </div>
+
+          <!-- Общее количество покупателей -->
+          <div class="metric-card accent-purple">
+            <div class="metric-label-row">
+              <span class="metric-label">Число покупателей</span>
+              <span class="metric-icon-small">👥</span>
+            </div>
+            <div class="metric-value" id="netTotalClients">0 <span class="unit">человек</span></div>
+            <div class="metric-sub">
+              <span>Зафиксировано камерами</span>
+            </div>
+          </div>
+
+          <!-- Средний чек по сети -->
+          <div class="metric-card accent-gold">
+            <div class="metric-label-row">
+              <span class="metric-label">Средний чек по сети</span>
+              <span class="metric-icon-small">🏷️</span>
+            </div>
+            <div class="metric-value" id="netAvgCheck">0 <span class="unit">сум</span></div>
+            <div class="metric-sub">
+              <span>Выручка / Количество чеков</span>
+            </div>
+          </div>
+
+          <!-- Общая сумма штрафов за опоздания -->
+          <div class="metric-card accent-red">
+            <div class="metric-label-row">
+              <span class="metric-label">Штрафы за опоздания</span>
+              <span class="metric-icon-small">🛑</span>
+            </div>
+            <div class="metric-value" id="netTotalPenalties" style="color:#dc2626;">0 <span class="unit">сум</span></div>
+            <div class="metric-sub" id="netTotalPenaltiesSub">
+              <span>0 опоздали / 0 вовремя</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Доли 4 филиалов в общей выручке -->
+        <div class="network-breakdown">
+          <div class="breakdown-title-row">
+            <span>Доля филиалов в дневной выручке сети:</span>
+            <span style="font-size:11px; font-weight:600; color:#64748b;">(Шымбай Бескала, Шымбай Базар, Хожели, Нукус)</span>
+          </div>
+          <div class="breakdown-bars-grid">
+            <div class="branch-bar-item">
+              <div class="branch-bar-info">
+                <span class="name">1. Чимбай (Бескала)</span>
+                <span class="share" id="shareText-1">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill branch-1" id="shareBar-1" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="branch-bar-item">
+              <div class="branch-bar-info">
+                <span class="name">2. Чимбай (Базар)</span>
+                <span class="share" id="shareText-2">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill branch-2" id="shareBar-2" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="branch-bar-item">
+              <div class="branch-bar-info">
+                <span class="name">3. Ходжейли</span>
+                <span class="share" id="shareText-3">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill branch-3" id="shareBar-3" style="width: 0%;"></div>
+              </div>
+            </div>
+
+            <div class="branch-bar-item">
+              <div class="branch-bar-info">
+                <span class="name">4. Нукус</span>
+                <span class="share" id="shareText-4">0%</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill branch-4" id="shareBar-4" style="width: 0%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. ПАНЕЛЬ ФИЛЬТРОВ И ПОИСКА -->
+      <div class="branches-toolbar">
+        <div class="branch-tabs">
+          <button type="button" class="branch-tab-btn active" id="tab-branch-all" onclick="filterByBranch('all')">
+            <span>Все филиалы</span>
+            <span class="count-badge">4</span>
+          </button>
+          <button type="button" class="branch-tab-btn" id="tab-branch-1" onclick="filterByBranch(1)">
+            <span>Филиал №1: Чимбай (Бескала)</span>
+            <span class="count-badge">6</span>
+          </button>
+          <button type="button" class="branch-tab-btn" id="tab-branch-2" onclick="filterByBranch(2)">
+            <span>Филиал №2: Чимбай (Базар)</span>
+            <span class="count-badge">2</span>
+          </button>
+          <button type="button" class="branch-tab-btn" id="tab-branch-3" onclick="filterByBranch(3)">
+            <span>Филиал №3: Ходжейли</span>
+            <span class="count-badge">2</span>
+          </button>
+          <button type="button" class="branch-tab-btn" id="tab-branch-4" onclick="filterByBranch(4)">
+            <span>Филиал №4: Нукус</span>
+            <span class="count-badge">2</span>
+          </button>
+        </div>
+
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Поиск фармацевта по имени..." oninput="onSearchInput(this.value)" />
+        </div>
+      </div>
+
+      <!-- 3. ДИНАМИЧЕСКИЙ СПИСОК ФИЛИАЛОВ И ФАРМАЦЕВТОВ -->
+      <div id="branchesContainer">
+        <!-- Генерируется из app.js -->
+      </div>
+
+      <!-- 4. НИЖНИЙ БЛОК ЛИДЕРОВ (РЕЙТИНГ И ОБРАЗЦОВЫЕ КАРТОЧКИ) -->
+      <section class="leaders-section">
+        <div class="section-head">
+          <div class="section-title-wrap">
+            <div class="section-icon" style="background:#fffbeb; color:#d97706; border-color:#fde68a;">🏆</div>
+            <div>
+              <h2 class="section-title">ТОП ФАРМАЦЕВТЫ СЕТИ ЗА ДЕНЬ (ЛИДЕРЫ ПРОДАЖ, ЧЕКОВ И ДИСЦИПЛИНЫ)</h2>
+              <p class="section-subtitle">Образцовые сотрудники сети «Пинток Медикал» по итогам выбранного дня</p>
+            </div>
+          </div>
+          <span style="font-size:12px; color:#d97706; font-weight:700;">★ Доска почёта сети</span>
+        </div>
+
+        <div class="leaders-grid" id="leadersGrid">
+          <!-- Генерируется из app.js -->
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       ДОМАЛАҚ КНОПКА (FLOATING ACTION BUTTON) — ИИ-ПОМОЩНИК ANTIGRAVITY
+       ====================================================================== -->
+  <div class="ai-fab-wrap">
+    <div class="ai-fab-tooltip">
+      <span>✨ ИИ Antigravity</span>
+    </div>
+    <button type="button" class="ai-fab-btn" id="aiFabBtn" onclick="toggleAiChat()" title="Открыть ИИ-помощника Antigravity">
+      <span class="ai-fab-pulse"></span>
+      <span class="ai-fab-icon">🤖</span>
+    </button>
+  </div>
+
+  <!-- ======================================================================
+       ОКНО ЧАТА С ИИ-ПОМОЩНИКОМ ANTIGRAVITY (AI CHAT DRAWER)
+       ====================================================================== -->
+  <div class="ai-chat-drawer" id="aiChatDrawer">
+    <div class="ai-chat-header">
+      <div class="ai-header-info">
+        <div class="ai-avatar-circle">🤖</div>
+        <div>
+          <div class="ai-header-title">ИИ-Помощник Antigravity</div>
+          <div class="ai-header-status">Онлайн • Аналитика сети аптек</div>
+        </div>
+      </div>
+      <button type="button" class="ai-close-btn" onclick="closeAiChat()">&times;</button>
+    </div>
+
+    <!-- Тело чата -->
+    <div class="ai-chat-body" id="aiChatBody">
+      <!-- Генерируется через app.js -->
+    </div>
+
+    <!-- Быстрые подсказки-вопросы -->
+    <div class="ai-quick-chips">
+      <button type="button" class="quick-chip-btn" onclick="sendAiMessage('Кто лидер продаж сегодня?')">🏆 Лидер продаж</button>
+      <button type="button" class="quick-chip-btn" onclick="sendAiMessage('Кто сегодня опоздал и какие штрафы?')">⚠️ Кто опоздал?</button>
+      <button type="button" class="quick-chip-btn" onclick="sendAiMessage('Общая выручка за сегодня')">💰 Выручка за день</button>
+      <button type="button" class="quick-chip-btn" onclick="sendAiMessage('Сравнить 4 филиала')">🏢 Сравнить филиалы</button>
+      <button type="button" class="quick-chip-btn" onclick="sendAiMessage('Совет: как поднять средний чек?')">💡 Совет по чеку</button>
+    </div>
+
+    <!-- Поле ввода вопроса -->
+    <div class="ai-chat-input-row">
+      <input type="text" id="aiChatInput" placeholder="Спросите у Antigravity (например: Кто сегодня опоздал?)..." />
+      <button type="button" class="ai-send-btn" onclick="sendAiMessage()" title="Отправить вопрос">➤</button>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       МОДАЛЬНОЕ ОКНО: УСТАНОВКА НА ТЕЛЕФОН (PWA ПРИЛОЖЕНИЕ)
+       ====================================================================== -->
+  <div class="modal-backdrop" id="pwaModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>
+          <span>📱</span>
+          <span>Установить «Пинток Медикал» на телефон как приложение</span>
+        </h3>
+        <button type="button" class="modal-close-btn" onclick="closePwaModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:14px; padding:18px; margin-bottom:20px; display:flex; align-items:center; gap:16px;">
+          <img src="logo-apteka.jpg" style="width:58px; height:58px; border-radius:14px; object-fit:cover; border:2px solid #ffffff; box-shadow:0 4px 10px rgba(0,0,0,0.1);" alt="Логотип" />
+          <div>
+            <h4 style="font-size:16px; font-weight:800; color:#0f172a; margin-bottom:2px;">Мобильное приложение «Пинток Медикал»</h4>
+            <p style="font-size:12px; color:#334155;">Работает без адресной строки, на полный экран, со всеми филиалами и ИИ-помощником Antigravity!</p>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-bottom:20px;">
+          <button type="button" class="btn btn-primary" id="btnInstallPwa" style="padding:12px 24px; font-size:15px;" onclick="installPwaApp()">
+            <span>📲 Установить на телефон прямо сейчас</span>
+          </button>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+          <!-- Android -->
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
+            <div style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+              <span>🤖</span> Android (Chrome, Samsung)
+            </div>
+            <ol style="font-size:12px; color:#475569; padding-left:18px; line-height:1.6;">
+              <li>Откройте сайт в Google Chrome на телефоне.</li>
+              <li>Нажмите на три точки вверху (⋮).</li>
+              <li>Выберите пункт <strong>«Установить приложение»</strong> (или «Добавить на главный экран»).</li>
+              <li>Иконка появится на рабочем столе смартфона!</li>
+            </ol>
+          </div>
+
+          <!-- iPhone -->
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px;">
+            <div style="font-size:14px; font-weight:800; color:#0f172a; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+              <span>🍏</span> iPhone (Safari)
+            </div>
+            <ol style="font-size:12px; color:#475569; padding-left:18px; line-height:1.6;">
+              <li>Откройте ссылку в браузере Safari.</li>
+              <li>Нажмите внизу кнопку <strong>«Поделиться»</strong> (квадрат со стрелкой вверх ⬆️).</li>
+              <li>Пролистайте вниз и выберите <strong>«На экран «Домой»»</strong>.</li>
+              <li>Готово! Приложение установлено на iPhone.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div style="margin-top:16px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:12px; font-size:12px; color:#1e40af;">
+          💡 <strong>Адрес для открытия с телефона в домашней сети Wi-Fi:</strong><br/>
+          Запустите файл <code>запустить_для_телефона.bat</code> на компьютере и откройте в браузере телефона адрес:<br/>
+          <strong style="font-size:14px; color:#1d4ed8;">http://172.20.10.4:8080/</strong>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closePwaModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       МОДАЛЬНОЕ ОКНО: ИНТЕГРАЦИЯ С КАМЕРАМИ ВИДЕОНАБЛЮДЕНИЯ (СКУД)
+       ====================================================================== -->
+  <div class="modal-backdrop" id="camerasModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>
+          <span>📷</span>
+          <span>Интеграция с камерами видеонаблюдения и FaceID</span>
+        </h3>
+        <button type="button" class="modal-close-btn" onclick="closeCamerasModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px; color:#64748b; margin-bottom:16px;">
+          Автоматическая фиксация времени прихода (план 08:00) и ухода (план 18:00) фармацевтов через биометрические камеры с мгновенным расчетом штрафа (10 000 сум за каждые 5 мин).
+        </p>
+
+        <div class="cameras-grid">
+          <!-- Камера 1 -->
+          <div class="camera-preview-card">
+            <div class="camera-preview-header">
+              <span>Камера 01: Чимбай (Бескала)</span>
+              <span class="cam-badge-live">● LIVE</span>
+            </div>
+            <div class="camera-preview-screen">
+              <div class="cam-face-box"></div>
+              <span>Входная зона аптеки</span>
+              <span style="font-size:10px; opacity:0.7;">FPS: 25 · 1080p</span>
+            </div>
+            <div class="camera-preview-footer">
+              <span>IP: 192.168.1.101</span>
+              <span>Фиксаций: 6</span>
+            </div>
+          </div>
+
+          <!-- Камера 2 -->
+          <div class="camera-preview-card">
+            <div class="camera-preview-header">
+              <span>Камера 02: Чимбай (Базар)</span>
+              <span class="cam-badge-live">● LIVE</span>
+            </div>
+            <div class="camera-preview-screen">
+              <div class="cam-face-box"></div>
+              <span>Кассовая зона</span>
+              <span style="font-size:10px; opacity:0.7;">FPS: 30 · 1080p</span>
+            </div>
+            <div class="camera-preview-footer">
+              <span>IP: 192.168.2.101</span>
+              <span>Фиксаций: 2</span>
+            </div>
+          </div>
+
+          <!-- Камера 3 -->
+          <div class="camera-preview-card">
+            <div class="camera-preview-header">
+              <span>Камера 03: Ходжейли</span>
+              <span class="cam-badge-live">● LIVE</span>
+            </div>
+            <div class="camera-preview-screen">
+              <div class="cam-face-box"></div>
+              <span>Входная группа</span>
+              <span style="font-size:10px; opacity:0.7;">FPS: 25 · 1080p</span>
+            </div>
+            <div class="camera-preview-footer">
+              <span>IP: 192.168.3.101</span>
+              <span>Фиксаций: 2</span>
+            </div>
+          </div>
+
+          <!-- Камера 4 -->
+          <div class="camera-preview-card">
+            <div class="camera-preview-header">
+              <span>Камера 04: Нукус</span>
+              <span class="cam-badge-live">● LIVE</span>
+            </div>
+            <div class="camera-preview-screen">
+              <div class="cam-face-box"></div>
+              <span>Главный турникет</span>
+              <span style="font-size:10px; opacity:0.7;">FPS: 30 · 1080p</span>
+            </div>
+            <div class="camera-preview-footer">
+              <span>IP: 192.168.4.101</span>
+              <span>Фиксаций: 2</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px; text-align:center;">
+          <button type="button" class="btn btn-primary" onclick="triggerFaceRecognitionSim()">
+            <span>⚡ Смоделировать распознавание лица (Face Check-In)</span>
+          </button>
+        </div>
+
+        <div class="face-log-box">
+          <div class="face-log-title">
+            <span>События биометрии (Табель 08:00 - 18:00 и статус штрафа)</span>
+            <span style="font-size:11px; color:#059669; font-weight:600;">● RTSP / ONVIF подключен</span>
+          </div>
+          <div class="face-log-list" id="faceLogList">
+            <!-- Список генерируется JS -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeCamerasModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       МОДАЛЬНОЕ ОКНО: ИНТЕГРАЦИЯ С ПРОГРАММОЙ «F-АПТЕКА»
+       ====================================================================== -->
+  <div class="modal-backdrop" id="fAptekaModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>
+          <span>🔄</span>
+          <span>Шлюз синхронизации с программой «F-Аптека»</span>
+        </h3>
+        <button type="button" class="modal-close-btn" onclick="closeFAptekaModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="sync-status-card">
+          <div class="info">
+            <h4>База данных F-Apteka v2.4 подключена</h4>
+            <p id="lastSyncTimeText">Последняя выгрузка: Сегодня, 18:45:00 · Пинг 12 мс</p>
+          </div>
+          <button type="button" class="btn btn-primary" id="btnSyncNow" onclick="triggerFAptekaSync()">
+            <span>🔄 Синхронизировать сейчас</span>
+          </button>
+        </div>
+
+        <div class="form-group">
+          <label>API URL Сервера F-Аптека:</label>
+          <input type="text" value="http://192.168.1.200:8080/f-apteka/api/v2/daily-sync" />
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+          <div class="form-group">
+            <label>API Ключ (Token):</label>
+            <input type="password" value="pintok_med_sec_994821a830f" />
+          </div>
+          <div class="form-group">
+            <label>Интервал автосинхронизации:</label>
+            <select>
+              <option selected>Каждые 5 минут</option>
+              <option>Каждые 15 минут</option>
+              <option>Каждый час</option>
+              <option>Только вручную</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; margin-top:14px;">
+          <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:8px;">
+            Экспорт и обмен пакетами данных (с учётом табеля и штрафов):
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary" onclick="exportToJson()">
+              <span>📥 Скачать JSON для F-Аптека</span>
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="exportToExcel()">
+              <span>📥 Экспорт таблицы в CSV</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeFAptekaModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================
+       ФУТЕР
+       ====================================================================== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>© 2026 Сеть аптек «ПИНТОК МЕДИКАЛ»</strong> · Все права защищены.
+      </div>
+      <div style="display:flex; gap:16px;">
+        <span>Чимбай · Ходжейли · Нукус</span>
+        <span>PWA Мобильное приложение & Antigravity AI Assistant</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
