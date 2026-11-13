@@ -1,0 +1,13 @@
+{
+  "name": "pintok-apteka",
+  "version": "1.0.0",
+  "description": "PINTOK APTEKA Telegram Bots (@apekaaabot, @apteka_kontrol_bot) & Attendance Dashboard",
+  "main": "start_all.js",
+  "scripts": {
+    "start": "node start_all.js",
+    "test": "node attendance.test.js && node bot.test.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -15,6 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 const { getTashkentNow } = require('./attendance');
+const { tgApiRequest } = require('./tg_http');
 
 const DATA_DIR = path.join(__dirname, 'bot-data');
 if (!fs.existsSync(DATA_DIR)) {
@@ -351,23 +352,7 @@ function getGroupBotToken() {
 
 async function defaultGroupTgRequest(method, data = {}) {
   const token = getGroupBotToken();
-  const maxRetries = method === "getUpdates" ? 1 : 3;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      return await res.json();
-    } catch (err) {
-      if (attempt === maxRetries) {
-        console.error(`Group Bot API error on ${method}:`, err.message);
-        return null;
-      }
-      await new Promise(r => setTimeout(r, 1000 * attempt));
-    }
-  }
+  return tgApiRequest(token, method, data, 'Group Bot');
 }
 
 class GroupStateManager {

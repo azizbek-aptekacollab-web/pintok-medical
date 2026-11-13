@@ -20,6 +20,7 @@ const {
   AttendanceManager
 } = require('./attendance');
 const { createGroupBotHandler } = require('./group_bot');
+const { tgApiRequest } = require('./tg_http');
 
 const DATA_DIR = path.join(__dirname, 'bot-data');
 if (!fs.existsSync(DATA_DIR)) {
@@ -45,23 +46,7 @@ async function defaultAdminTgRequest(method, data = {}) {
     console.error("ADMIN_BOT_TOKEN is not set in bot-data/bot-config.json or environment.");
     return null;
   }
-  const maxRetries = method === "getUpdates" ? 1 : 3;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      return await res.json();
-    } catch (err) {
-      if (attempt === maxRetries) {
-        console.error(`Admin Bot API error on ${method}:`, err.message);
-        return null;
-      }
-      await new Promise(r => setTimeout(r, 1000 * attempt));
-    }
-  }
+  return tgApiRequest(token, method, data, 'Admin Bot');
 }
 
 function getAdminMainKeyboard() {
@@ -800,7 +785,7 @@ async function pollAdminUpdates() {
   }
 }
 
-module.exports = { createAdminBotHandler };
+module.exports = { createAdminBotHandler, pollAdminUpdates };
 
 if (require.main === module) {
   console.log("PINTOK APTEKA Admin Bot is starting polling...");

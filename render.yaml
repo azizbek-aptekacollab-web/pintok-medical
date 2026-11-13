@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: pintok-medical-bots
+    runtime: node
+    plan: free
+    buildCommand: ""
+    startCommand: node start_all.js
+    healthCheckPath: /health
+    autoDeploy: true

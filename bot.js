@@ -21,6 +21,7 @@ const {
   AttendanceManager
 } = require('./attendance');
 const { createGroupBotHandler } = require('./group_bot');
+const { tgApiRequest } = require('./tg_http');
 
 const BOT_TOKEN = process.env.EMPLOYEE_BOT_TOKEN || "9093634525:AAFgoPIGrd4R4epknfjILXoquBZDnP5_ZJ0";
 const TELEGRAM_API = `https://api.telegram.org/bot${BOT_TOKEN}`;
@@ -48,43 +49,12 @@ function getAdminBotToken() {
 }
 
 async function defaultTgRequest(method, data = {}) {
-  const maxRetries = method === "getUpdates" ? 1 : 3;
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const res = await fetch(`${TELEGRAM_API}/${method}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      return await res.json();
-    } catch (err) {
-      if (attempt === maxRetries) {
-        console.error(`Employee Bot API error on ${method}:`, err.message);
-        return null;
-      }
-      await new Promise(r => setTimeout(r, 1000 * attempt));
-    }
-  }
+  return tgApiRequest(BOT_TOKEN, method, data, 'Employee Bot');
 }
 
 async function defaultAdminTgRequest(method, data = {}) {
   const token = getAdminBotToken();
-  for (let attempt = 1; attempt <= 3; attempt++) {
-    try {
-      const res = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-      return await res.json();
-    } catch (err) {
-      if (attempt === 3) {
-        console.error(`Admin Bot notify error on ${method}:`, err.message);
-        return null;
-      }
-      await new Promise(r => setTimeout(r, 1000 * attempt));
-    }
-  }
+  return tgApiRequest(token, method, data, 'Admin Bot notify');
 }
 
 // Хызметкерлер ушын ТЕК 4 түйме (ешқандай өзгертиў ямаса басшы функциясы жоқ!)
@@ -670,7 +640,7 @@ async function pollUpdates() {
   }
 }
 
-module.exports = { createBotHandler };
+module.exports = { createBotHandler, pollUpdates };
 
 if (require.main === module) {
   console.log("PINTOK APTEKA Employee Bot (@apekaaabot) is starting polling...");
