@@ -1,9 +1,15 @@
 {
   "settings": {
-    "maxDistanceMeters": 4,
-    "penaltyPer5Min": 10000,
+    "maxDistanceMeters": 50,
+    "penaltyPerMinute": 3000,
+    "monthlyExcuseLimit": 3,
     "monthlyBonusSum": 1000000,
     "startTime": "08:00",
+    "shift1EndTime": "16:00",
+    "shift2StartTime": "16:30",
+    "shift2EndTime": "00:00",
+    "bazaarEndTime": "19:00",
+    "penaltyPer5Min": 10000,
     "eveningStartTime": "17:00",
     "eveningEndTime": "00:00"
   },
@@ -11,329 +17,305 @@
     {
       "id": "branch_1",
       "branchNumber": 1,
-      "name": "Филиал №1",
-      "shortName": "Филиал 1 (Шымбай Бесқала)",
-      "address": "Шымбай қ., Бесқала көшеси",
+      "name": "1-Филиал",
+      "shortName": "1-Филиал (Шымбай, 5-этажлы Емлеўхана қасында)",
+      "address": "Шымбай районы, 5-этажлы Емлеўхана қасында",
+      "workHoursText": "08:00 – 00:00 (1-смена: 08:00–16:00 | 2-смена: 16:30–00:00)",
+      "hasTwoShifts": true,
+      "shifts": {
+        "SHIFT_1": {
+          "id": "SHIFT_1",
+          "label": "☀️ 1-смена (08:00 – 16:00)",
+          "startTime": "08:00",
+          "endTime": "16:00"
+        },
+        "SHIFT_2": {
+          "id": "SHIFT_2",
+          "label": "🌙 2-смена (16:30 – 00:00)",
+          "startTime": "16:30",
+          "endTime": "00:00"
+        }
+      },
       "lat": 42.918927,
       "lng": 59.779079,
       "anchors": [
         {
           "lat": 42.918927,
           "lng": 59.779079
-        },
-        {
-          "lat": 42.918991,
-          "lng": 59.779355
-        },
-        {
-          "lat": 42.918915,
-          "lng": 59.779052
-        },
-        {
-          "lat": 42.918947,
-          "lng": 59.779064
         }
       ],
-      "mapUrl": "https://maps.google.com/maps?q=42.918927,59.779079&ll=42.918927,59.779079&z=16"
+      "mapUrl": "https://maps.google.com/maps?q=42.918927,59.779079&ll=42.918927,59.779079&z=16",
+      "customLocation": true
     },
     {
       "id": "branch_2",
       "branchNumber": 2,
-      "name": "Филиал №2",
-      "shortName": "Филиал 2 (Шымбай Базар)",
-      "address": "Шымбай қ., Орайлық Базар",
-      "lat": 68.882393,
-      "lng": 81.000045,
+      "name": "2-Филиал",
+      "shortName": "2-Филиал (Шымбай, Базар ишинде)",
+      "address": "Шымбай районы, Базардың ишинде",
+      "workHoursText": "08:00 – 19:00",
+      "hasTwoShifts": false,
+      "shifts": {
+        "SHIFT_1": {
+          "id": "SHIFT_1",
+          "label": "☀️ Күндизги смена (08:00 – 19:00)",
+          "startTime": "08:00",
+          "endTime": "19:00"
+        }
+      },
+      "lat": 42.933575,
+      "lng": 59.773668,
       "anchors": [
         {
-          "lat": 68.882393,
-          "lng": 81.000045
-        },
-        {
-          "lat": 42.920301,
-          "lng": 59.790651
-        },
-        {
-          "lat": 42.933551,
-          "lng": 59.773614
+          "lat": 42.933575,
+          "lng": 59.773668
         },
         {
           "lat": 42.933495,
           "lng": 59.773732
         },
         {
-          "lat": 42.933575,
-          "lng": 59.773668
+          "lat": 42.932415,
+          "lng": 59.772631
         },
         {
-          "lat": 42.933719,
-          "lng": 59.773445
+          "lat": 42.93229,
+          "lng": 59.773275
         }
       ],
-      "mapUrl": "https://maps.google.com/maps?q=68.882393,81.000045&ll=68.882393,81.000045&z=16"
+      "mapUrl": "https://maps.google.com/maps?q=42.933575,59.773668&ll=42.933575,59.773668&z=16",
+      "customLocation": true
     },
     {
       "id": "branch_3",
       "branchNumber": 3,
-      "name": "Филиал №3",
-      "shortName": "Филиал 3 (Хожели)",
-      "address": "Хожели қ., Орайлық көше",
-      "lat": 68.882393,
-      "lng": 81.000045,
-      "anchors": [
-        {
-          "lat": 68.882393,
-          "lng": 81.000045
+      "name": "3-Филиал",
+      "shortName": "3-Филиал (Хожели, Емлеўхана қарама-қарсы)",
+      "address": "Хожели районы, Емлеўхана қарама-қарсы",
+      "workHoursText": "08:00 – 00:00 (1-смена: 08:00–16:00 | 2-смена: 16:30–00:00)",
+      "hasTwoShifts": true,
+      "shifts": {
+        "SHIFT_1": {
+          "id": "SHIFT_1",
+          "label": "☀️ 1-смена (08:00 – 16:00)",
+          "startTime": "08:00",
+          "endTime": "16:00"
         },
+        "SHIFT_2": {
+          "id": "SHIFT_2",
+          "label": "🌙 2-смена (16:30 – 00:00)",
+          "startTime": "16:30",
+          "endTime": "00:00"
+        }
+      },
+      "lat": 42.411627,
+      "lng": 59.46304,
+      "anchors": [
         {
           "lat": 42.411627,
           "lng": 59.46304
-        },
-        {
-          "lat": 42.411633,
-          "lng": 59.462748
-        },
-        {
-          "lat": 42.411664,
-          "lng": 59.462758
-        },
-        {
-          "lat": 42.411553,
-          "lng": 59.462991
-        },
-        {
-          "lat": 42.411386,
-          "lng": 59.462729
-        },
-        {
-          "lat": 42.412036,
-          "lng": 59.463001
-        },
-        {
-          "lat": 42.411168,
-          "lng": 59.462472
         }
       ],
-      "mapUrl": "https://maps.google.com/maps?q=42.411627,59.463040&ll=42.411627,59.463040&z=16"
+      "mapUrl": "https://maps.google.com/maps?q=42.411627,59.46304&ll=42.411627,59.46304&z=16",
+      "customLocation": true
     },
     {
       "id": "branch_4",
       "branchNumber": 4,
-      "name": "Филиал №4",
-      "shortName": "Филиал 4 (Нөкис)",
-      "address": "Нөкис қ., А. Досназаров көшеси",
+      "name": "4-Филиал",
+      "shortName": "4-Филиал (Нөкис, Городской Больница қарама-қарсы)",
+      "address": "Нөкис қаласы, Городской Больница қарама-қарсы",
+      "workHoursText": "08:00 – 00:00 (1-смена: 08:00–16:00 | 2-смена: 16:30–00:00)",
+      "hasTwoShifts": true,
+      "shifts": {
+        "SHIFT_1": {
+          "id": "SHIFT_1",
+          "label": "☀️ 1-смена (08:00 – 16:00)",
+          "startTime": "08:00",
+          "endTime": "16:00"
+        },
+        "SHIFT_2": {
+          "id": "SHIFT_2",
+          "label": "🌙 2-смена (16:30 – 00:00)",
+          "startTime": "16:30",
+          "endTime": "00:00"
+        }
+      },
       "lat": 42.473931,
       "lng": 59.609268,
       "anchors": [
         {
           "lat": 42.473931,
           "lng": 59.609268
-        },
-        {
-          "lat": 42.473869,
-          "lng": 59.609245
-        },
-        {
-          "lat": 42.473911,
-          "lng": 59.609283
         }
       ],
-      "mapUrl": "https://maps.google.com/maps?q=42.473931,59.609268&ll=42.473931,59.609268&z=16"
-    },
-    {
-      "id": "warehouse",
-      "branchNumber": 5,
-      "name": "📦 Склад",
-      "shortName": "📦 Орайлық Склад",
-      "address": "Шымбай қ., Орайлық Склад",
-      "lat": 42.918825,
-      "lng": 59.778217,
-      "anchors": [
-        {
-          "lat": 42.918825,
-          "lng": 59.778217
-        },
-        {
-          "lat": 42.919013,
-          "lng": 59.778285
-        },
-        {
-          "lat": 42.919025,
-          "lng": 59.778312
-        }
-      ],
-      "mapUrl": "https://maps.google.com/maps?q=42.918825,59.778217&ll=42.918825,59.778217&z=16"
+      "mapUrl": "https://maps.google.com/maps?q=42.473931,59.609268&ll=42.473931,59.609268&z=16",
+      "customLocation": true
     }
   ],
   "employees": [
     {
+      "onSickLeave": false,
+      "phone": "+998994568584",
       "id": "emp_1",
       "workplaceId": "branch_1",
-      "name": "Мехрибан",
-      "role": "Бас провизор",
-      "staj": "9 жыл стаж"
+      "name": "Мехри",
+      "role": "Фармацевт",
+      "phoneKey": "994568584"
     },
     {
+      "onSickLeave": false,
+      "phone": "+998919395804",
       "id": "emp_2",
       "workplaceId": "branch_1",
-      "name": "Санавар",
+      "name": "Жамила",
       "role": "Фармацевт",
-      "staj": "2 жыл стаж"
+      "phoneKey": "919395804"
     },
     {
+      "onSickLeave": false,
+      "phone": "+998992513450",
       "id": "emp_3",
-      "workplaceId": "branch_1",
-      "name": "Жамиля",
-      "role": "Фармацевт",
-      "staj": "6 жыл стаж"
-    },
-    {
-      "id": "emp_4",
-      "workplaceId": "branch_1",
-      "name": "Гөзал",
-      "role": "Фармацевт",
-      "staj": "2 жыл стаж"
-    },
-    {
-      "id": "emp_5",
-      "workplaceId": "branch_1",
-      "name": "Гумсай",
-      "role": "Фармацевт",
-      "staj": "2 ай стаж"
-    },
-    {
-      "id": "emp_6",
-      "workplaceId": "branch_1",
-      "name": "Гульжайна",
-      "role": "Фармацевт",
-      "staj": "3 ай стаж"
-    },
-    {
-      "id": "emp_15",
-      "workplaceId": "branch_1",
-      "name": "Ильхам",
-      "role": "Кассир",
-      "staj": "Кассир"
-    },
-    {
-      "id": "emp_16",
       "workplaceId": "branch_1",
       "name": "Сапаргуль",
       "role": "Фармацевт",
-      "staj": "Фармацевт"
+      "phoneKey": "992513450"
     },
     {
+      "onSickLeave": false,
+      "phone": "+998958360215",
+      "id": "emp_4",
+      "workplaceId": "branch_1",
+      "name": "Гөззал",
+      "role": "Фармацевт",
+      "phoneKey": "958360215"
+    },
+    {
+      "onSickLeave": false,
+      "phone": "+998953433341",
+      "id": "emp_5",
+      "workplaceId": "branch_1",
+      "name": "Гульжайна",
+      "role": "Фармацевт",
+      "phoneKey": "953433341"
+    },
+    {
+      "onSickLeave": false,
+      "phone": "+998996569199",
+      "id": "emp_6",
+      "workplaceId": "branch_1",
+      "name": "Санавар",
+      "role": "Фармацевт",
+      "phoneKey": "996569199"
+    },
+    {
+      "onSickLeave": false,
+      "phone": "+998905941336",
       "id": "emp_7",
-      "workplaceId": "branch_2",
-      "name": "Фируза",
-      "role": "Бас фармацевт",
-      "staj": "3 жыл стаж"
+      "workplaceId": "branch_1",
+      "name": "Гумсай",
+      "role": "Фармацевт",
+      "phoneKey": "905941336"
     },
     {
+      "onSickLeave": false,
+      "phone": "+998956630314",
       "id": "emp_8",
+      "workplaceId": "branch_2",
+      "name": "Феруза",
+      "role": "Фармацевт",
+      "phoneKey": "956630314"
+    },
+    {
+      "onSickLeave": false,
+      "phone": "+998906522027",
+      "id": "emp_9",
       "workplaceId": "branch_2",
       "name": "Ахзира",
       "role": "Фармацевт",
-      "staj": "2 жыл стаж"
+      "phoneKey": "906522027"
     },
     {
-      "id": "emp_9",
+      "onSickLeave": false,
+      "phone": "+998906501393",
+      "id": "emp_10",
       "workplaceId": "branch_3",
       "name": "Айгуль",
-      "role": "Бас провизор",
-      "staj": "5 жыл стаж"
+      "role": "Фармацевт",
+      "phoneKey": "906501393"
     },
     {
-      "id": "emp_10",
+      "onSickLeave": false,
+      "phone": "+998919380809",
+      "id": "emp_11",
       "workplaceId": "branch_3",
       "name": "Мафтуна",
       "role": "Фармацевт",
-      "staj": "3 ай стаж"
+      "phoneKey": "919380809"
     },
     {
-      "id": "emp_11",
-      "workplaceId": "branch_4",
-      "name": "Хурлиман",
-      "role": "Бас фармацевт",
-      "staj": "1 жыл стаж"
-    },
-    {
+      "onSickLeave": false,
+      "phone": "+998913790859",
       "id": "emp_12",
+      "workplaceId": "branch_4",
+      "name": "Хурлима",
+      "role": "Фармацевт",
+      "phoneKey": "913790859"
+    },
+    {
+      "onSickLeave": false,
+      "phone": "+998907140036",
+      "id": "emp_13",
       "workplaceId": "branch_4",
       "name": "Жулдыз",
       "role": "Фармацевт",
-      "staj": "1 жыл стаж"
+      "phoneKey": "907140036"
     },
     {
-      "id": "emp_13",
-      "workplaceId": "warehouse",
-      "name": "Юсуп",
-      "role": "Закупщик",
-      "staj": "Склад"
-    },
-    {
+      "onSickLeave": false,
+      "phone": "+998905901814",
       "id": "emp_14",
-      "workplaceId": "warehouse",
-      "name": "Мухаммед",
-      "role": "Бухгалтер",
-      "staj": "Склад"
+      "workplaceId": "branch_1",
+      "name": "Ильхам",
+      "role": "Кассир",
+      "phoneKey": "905901814"
     }
   ],
   "bindings": {
-    "emp_7": {
-      "telegramUserId": 7116175168,
-      "telegramUsername": "𝓐𝔂𝓽𝓳𝓪𝓷𝓸𝓿𝓪 𝓟𝓮𝓻𝓾𝔃𝓪",
-      "boundAt": "2026-11-10T11:19:12.640Z"
-    },
-    "emp_8": {
+    "emp_9": {
       "telegramUserId": 7596293232,
       "telegramUsername": "a",
-      "boundAt": "2026-11-10T11:32:23.684Z"
+      "phone": "+998906522027",
+      "phoneKey": "906522027",
+      "boundAt": "2026-11-16T06:56:14.900Z"
     },
-    "emp_9": {
-      "telegramUserId": 1073420945,
-      "telegramUsername": "Айгуль♥️",
-      "boundAt": "2026-11-10T11:32:25.225Z"
+    "emp_8": {
+      "telegramUserId": 7116175168,
+      "telegramUsername": "𝓐𝔂𝓽𝓳𝓪𝓷𝓸𝓿𝓪 𝓟𝓮𝓻𝓾𝔃𝓪",
+      "phone": "+998956630314",
+      "phoneKey": "956630314",
+      "boundAt": "2026-11-16T07:54:13.415Z"
     },
-    "emp_13": {
-      "telegramUserId": 1626101513,
-      "telegramUsername": "SA_Fergyuson",
-      "boundAt": "2026-11-10T11:33:57.276Z"
+    "emp_1794816885556_48": {
+      "telegramUserId": 8728801839,
+      "telegramUsername": "Ильхам",
+      "phone": "+998905901814",
+      "phoneKey": "905901814",
+      "boundAt": "2026-11-16T08:14:49.375Z"
     },
-    "emp_11": {
-      "telegramUserId": 345807126,
-      "telegramUsername": "Hurliman84",
-      "boundAt": "2026-11-10T11:39:51.482Z"
-    },
-    "emp_10": {
-      "telegramUserId": 5162830182,
-      "telegramUsername": "Мафтуна",
-      "boundAt": "2026-11-10T11:45:03.719Z"
+    "emp_4": {
+      "telegramUserId": 8043593505,
+      "telegramUsername": "Гоззал",
+      "phone": "+998958360215",
+      "phoneKey": "958360215",
+      "boundAt": "2026-11-16T08:20:09.688Z"
     },
     "emp_1": {
       "telegramUserId": 5244076417,
       "telegramUsername": "Мехри",
-      "boundAt": "2026-11-10T12:05:19.861Z"
-    },
-    "emp_2": {
-      "telegramUserId": 8178665870,
-      "telegramUsername": "Сано",
-      "boundAt": "2026-11-10T12:11:55.583Z"
-    },
-    "emp_15": {
-      "telegramUserId": 8728801839,
-      "telegramUsername": "Ильхам",
-      "boundAt": "2026-11-10T12:14:12.176Z"
-    },
-    "emp_5": {
-      "telegramUserId": 5657196142,
-      "telegramUsername": "H",
-      "boundAt": "2026-11-10T12:16:44.258Z"
-    },
-    "emp_6": {
-      "telegramUserId": 7589967745,
-      "telegramUsername": "Каримбаевна.г",
-      "boundAt": "2026-11-11T15:31:53.188Z"
+      "phone": "+998994568584",
+      "phoneKey": "994568584",
+      "boundAt": "2026-11-16T08:22:05.818Z"
     }
   },
   "adminChats": [
@@ -341,177 +323,335 @@
     5914650828
   ],
   "days": {
-    "2026-11-10": {
-      "emp_1": {
-        "employeeId": "emp_1",
-        "name": "Мехрибан",
-        "role": "Бас провизор",
-        "workplaceId": "branch_1",
-        "workplaceName": "Филиал 1 (Шымбай Бесқала)",
-        "arrTime": "17:06",
-        "leaveTime": "—",
-        "inDistance": 0,
-        "outDistance": null,
-        "isLate": false,
-        "lateMinutes": 0,
-        "penalty": 0,
-        "status": "🟢 Жумыста",
-        "inLat": 42.918927,
-        "inLng": 59.779079
-      },
-      "emp_11": {
-        "employeeId": "emp_11",
-        "name": "Хурлиман",
-        "role": "Бас фармацевт",
-        "workplaceId": "branch_4",
-        "workplaceName": "Филиал 4 (Нөкис)",
-        "arrTime": "16:42",
-        "leaveTime": "—",
-        "inDistance": 2.54,
-        "outDistance": null,
-        "isLate": false,
-        "lateMinutes": 0,
-        "penalty": 0,
-        "status": "🟢 Жумыста",
-        "inLat": 42.473911,
-        "inLng": 59.609283
-      },
-      "emp_10": {
-        "employeeId": "emp_10",
-        "name": "Мафтуна",
-        "role": "Фармацевт",
-        "workplaceId": "branch_3",
-        "workplaceName": "Филиал 3 (Хожели)",
-        "arrTime": "17:38",
-        "leaveTime": "—",
-        "inDistance": 3.64,
-        "outDistance": null,
-        "isLate": false,
-        "lateMinutes": 0,
-        "penalty": 0,
-        "status": "🟢 Жумыста (08:00)",
-        "inLat": 42.411545,
-        "inLng": 59.463034,
-        "shift": "DAY",
-        "shiftLabel": "🟢 Күндизги смена (08:00 - 18:00)"
-      },
+    "2026-11-16": {
       "emp_9": {
         "employeeId": "emp_9",
-        "name": "Айгуль",
-        "role": "Бас провизор",
-        "workplaceId": "branch_3",
-        "workplaceName": "Филиал 3 (Хожели)",
-        "arrTime": "17:33",
-        "leaveTime": "—",
-        "inDistance": 0,
-        "outDistance": null,
-        "isLate": false,
-        "lateMinutes": 0,
-        "penalty": 0,
-        "status": "🟢 Жумыста (08:00)",
-        "inLat": 68.882393,
-        "inLng": 81.000045,
-        "shift": "DAY",
-        "shiftLabel": "🟢 Күндизги смена (08:00 - 18:00)"
-      },
-      "emp_2": {
-        "employeeId": "emp_2",
-        "name": "Санавар",
-        "role": "Фармацевт",
-        "workplaceId": "branch_1",
-        "workplaceName": "Филиал 1 (Шымбай Бесқала)",
-        "arrTime": "17:12",
-        "leaveTime": "—",
-        "inDistance": 2.57,
-        "outDistance": null,
-        "isLate": false,
-        "lateMinutes": 0,
-        "penalty": 0,
-        "status": "🟢 Жумыста",
-        "inLat": 42.918915,
-        "inLng": 59.779052
-      },
-      "emp_15": {
-        "employeeId": "emp_15",
-        "name": "Ильхам",
-        "role": "Кассир",
-        "workplaceId": "branch_1",
-        "workplaceName": "Филиал 1 (Шымбай Бесқала)",
-        "arrTime": "17:14",
-        "leaveTime": "17:14",
-        "inDistance": 2.54,
-        "outDistance": 2.54,
-        "isLate": false,
-        "lateMinutes": 0,
-        "penalty": 0,
-        "status": "🔴 Кетти",
-        "inLat": 42.918947,
-        "inLng": 59.779064,
-        "outLat": 42.918947,
-        "outLng": 59.779064
-      },
-      "emp_8": {
-        "employeeId": "emp_8",
         "name": "Ахзира",
         "role": "Фармацевт",
         "workplaceId": "branch_2",
-        "workplaceName": "Филиал 2 (Шымбай Базар)",
-        "arrTime": "17:28",
+        "workplaceName": "2-Филиал (Шымбай, Базар ишинде)",
+        "arrTime": "12:51",
         "leaveTime": "—",
         "inDistance": 0,
         "outDistance": null,
-        "isLate": false,
-        "lateMinutes": 0,
-        "penalty": 0,
-        "status": "🟢 Жумыста (08:00)",
-        "inLat": 42.933495,
-        "inLng": 59.773732,
+        "shiftId": "SHIFT_1",
+        "shiftLabel": "☀️ Күндизги смена (08:00 – 19:00)",
+        "isLate": true,
+        "lateMinutes": 291,
+        "latePenalty": 873000,
+        "isEarlyLeave": false,
+        "earlyLeaveMinutes": 0,
+        "earlyLeavePenalty": 0,
+        "penalty": 873000,
+        "excuseStatus": null,
+        "excuseReason": null,
+        "isSickLeave": false,
+        "status": "🟢 Жумыста (08:00–19:00)",
+        "inLat": 42.93229,
+        "inLng": 59.773275,
         "shift": "DAY",
-        "shiftLabel": "🟢 Күндизги смена (08:00 - 18:00)"
+        "shiftStartTime": "08:00",
+        "shiftEndTime": "19:00"
       },
-      "emp_7": {
-        "employeeId": "emp_7",
-        "name": "Фируза",
-        "role": "Бас фармацевт",
+      "emp_8": {
+        "employeeId": "emp_8",
+        "name": "Феруза",
+        "role": "Фармацевт",
         "workplaceId": "branch_2",
-        "workplaceName": "Филиал 2 (Шымбай Базар)",
-        "arrTime": "17:29",
-        "leaveTime": "—",
-        "inDistance": 0.32,
-        "outDistance": null,
-        "isLate": false,
-        "lateMinutes": 0,
-        "penalty": 0,
-        "status": "🟢 Жумыста (08:00)",
-        "inLat": 42.933538,
-        "inLng": 59.77377,
+        "workplaceName": "2-Филиал (Шымбай, Базар ишинде)",
+        "arrTime": "12:59",
+        "leaveTime": "13:00",
+        "inDistance": 0,
+        "outDistance": 2.58,
+        "shiftId": "SHIFT_1",
+        "shiftLabel": "☀️ Күндизги смена (08:00 – 19:00)",
+        "isLate": true,
+        "lateMinutes": 299,
+        "latePenalty": 897000,
+        "isEarlyLeave": true,
+        "earlyLeaveMinutes": 360,
+        "earlyLeavePenalty": 1080000,
+        "penalty": 1977000,
+        "excuseStatus": null,
+        "excuseReason": null,
+        "isSickLeave": false,
+        "status": "⚠️ Ерте кетти (13:00, -360 мин)",
+        "inLat": 42.933575,
+        "inLng": 59.773668,
         "shift": "DAY",
-        "shiftLabel": "🟢 Күндизги смена (08:00 - 18:00)"
-      }
-    },
-    "2026-11-11": {
-      "emp_6": {
-        "employeeId": "emp_6",
-        "name": "Гульжайна",
+        "shiftStartTime": "08:00",
+        "shiftEndTime": "19:00",
+        "outLat": 42.933555,
+        "outLng": 59.773684
+      },
+      "emp_1794816885556_48": {
+        "employeeId": "emp_1794816885556_48",
+        "name": "Ильхам",
+        "role": "Кассир",
+        "workplaceId": "branch_1",
+        "workplaceName": "1-Филиал (Шымбай, 5-этажлы Емлеўхана қасында)",
+        "arrTime": "13:15",
+        "leaveTime": "—",
+        "inDistance": 2.54,
+        "outDistance": null,
+        "shiftId": "SHIFT_1",
+        "shiftLabel": "☀️ 1-смена (08:00 – 16:00)",
+        "isLate": true,
+        "lateMinutes": 315,
+        "latePenalty": 0,
+        "isEarlyLeave": false,
+        "earlyLeaveMinutes": 0,
+        "earlyLeavePenalty": 0,
+        "penalty": 0,
+        "excuseStatus": "APPROVED",
+        "excuseReason": "Кеше отырыс болды",
+        "isSickLeave": false,
+        "status": "🟢 Жумыста (08:00–16:00) | 🟢 Себепли кеширилди",
+        "inLat": 42.918947,
+        "inLng": 59.779064,
+        "shift": "DAY",
+        "shiftStartTime": "08:00",
+        "shiftEndTime": "16:00",
+        "excuseRequestId": "exc_emp_1794816885556_48_2026-11-16_1212"
+      },
+      "emp_4": {
+        "employeeId": "emp_4",
+        "name": "Гөззал",
         "role": "Фармацевт",
         "workplaceId": "branch_1",
-        "workplaceName": "Филиал 1 (Шымбай Бесқала)",
-        "arrTime": "20:32",
+        "workplaceName": "1-Филиал (Шымбай, 5-этажлы Емлеўхана қасында)",
+        "arrTime": "13:21",
         "leaveTime": "—",
         "inDistance": 0,
         "outDistance": null,
+        "shiftId": "SHIFT_1",
+        "shiftLabel": "☀️ 1-смена (08:00 – 16:00)",
         "isLate": true,
-        "lateMinutes": 752,
-        "penalty": 1510000,
-        "status": "🟢 Жумыста (08:00)",
+        "lateMinutes": 321,
+        "latePenalty": 963000,
+        "isEarlyLeave": false,
+        "earlyLeaveMinutes": 0,
+        "earlyLeavePenalty": 0,
+        "penalty": 963000,
+        "excuseStatus": null,
+        "excuseReason": null,
+        "isSickLeave": false,
+        "status": "🟢 Жумыста (08:00–16:00)",
         "inLat": 42.918927,
         "inLng": 59.779079,
         "shift": "DAY",
-        "shiftLabel": "🟢 Күндизги смена (08:00 - 18:00)"
+        "shiftStartTime": "08:00",
+        "shiftEndTime": "16:00"
       }
     }
   },
+  "excuseRequests": {
+    "exc_emp_1794816885556_48_2026-11-16_1212": {
+      "id": "exc_emp_1794816885556_48_2026-11-16_1212",
+      "employeeId": "emp_1794816885556_48",
+      "employeeName": "Ильхам",
+      "workplaceId": "branch_1",
+      "workplaceName": "1-Филиал (Шымбай, 5-этажлы Емлеўхана қасында)",
+      "dateStr": "2026-11-16",
+      "yearMonth": "2026-11",
+      "lateMinutes": 315,
+      "penalty": 945000,
+      "reasonText": "Кеше отырыс болды",
+      "status": "APPROVED",
+      "createdAt": "2026-11-16T08:15:31.212Z",
+      "resolvedAt": "2026-11-16T08:16:11.834Z"
+    }
+  },
+  "sessions": {},
   "logs": [
+    {
+      "timestamp": "2026-11-16 13:23:28",
+      "employeeId": "emp_1",
+      "name": "Мехри",
+      "role": "Фармацевт",
+      "workplaceId": "branch_1",
+      "workplaceName": "1-Филиал (Шымбай, 5-этажлы Емлеўхана қасында)",
+      "actionType": "IN",
+      "status": "REJECTED_TOO_FAR",
+      "distanceMeters": 702644.57,
+      "lat": 39.648953,
+      "lng": 66.980038
+    },
+    {
+      "timestamp": "2026-11-16 13:22:24",
+      "employeeId": "emp_1",
+      "name": "Мехри",
+      "role": "Фармацевт",
+      "workplaceId": "branch_1",
+      "workplaceName": "1-Филиал (Шымбай, 5-этажлы Емлеўхана қасында)",
+      "actionType": "IN",
+      "status": "REJECTED_TOO_FAR",
+      "distanceMeters": 6953322.35,
+      "lat": 20.659324,
+      "lng": -11.406255
+    },
+    {
+      "timestamp": "2026-11-16 13:21:06",
+      "employeeId": "emp_4",
+      "name": "Гөззал",
+      "role": "Фармацевт",
+      "workplaceId": "branch_1",
+      "workplaceName": "1-Филиал (Шымбай, 5-этажлы Емлеўхана қасында)",
+      "actionType": "IN",
+      "status": "ACCEPTED",
+      "timeStr": "13:21",
+      "distanceMeters": 0,
+      "isLive": false,
+      "penalty": 963000,
+      "lateMinutes": 321,
+      "earlyLeaveMinutes": 0
+    },
+    {
+      "timestamp": "2026-11-16 13:15:00",
+      "employeeId": "emp_1794816885556_48",
+      "name": "Ильхам",
+      "role": "Кассир",
+      "workplaceId": "branch_1",
+      "workplaceName": "1-Филиал (Шымбай, 5-этажлы Емлеўхана қасында)",
+      "actionType": "IN",
+      "status": "ACCEPTED",
+      "timeStr": "13:15",
+      "distanceMeters": 2.54,
+      "isLive": false,
+      "penalty": 945000,
+      "lateMinutes": 315,
+      "earlyLeaveMinutes": 0
+    },
+    {
+      "timestamp": "2026-11-16 13:00:57",
+      "employeeId": "emp_8",
+      "name": "Феруза",
+      "role": "Фармацевт",
+      "workplaceId": "branch_2",
+      "workplaceName": "2-Филиал (Шымбай, Базар ишинде)",
+      "actionType": "OUT",
+      "status": "ACCEPTED",
+      "timeStr": "13:00",
+      "distanceMeters": 2.58,
+      "isLive": false,
+      "penalty": 1977000,
+      "lateMinutes": 299,
+      "earlyLeaveMinutes": 360
+    },
+    {
+      "timestamp": "2026-11-16 12:59:12",
+      "employeeId": "emp_8",
+      "name": "Феруза",
+      "role": "Фармацевт",
+      "workplaceId": "branch_2",
+      "workplaceName": "2-Филиал (Шымбай, Базар ишинде)",
+      "actionType": "IN",
+      "status": "ACCEPTED",
+      "timeStr": "12:59",
+      "distanceMeters": 0,
+      "isLive": false,
+      "penalty": 897000,
+      "lateMinutes": 299,
+      "earlyLeaveMinutes": 0
+    },
+    {
+      "timestamp": "2026-11-16 12:54:41",
+      "employeeId": "emp_8",
+      "name": "Феруза",
+      "role": "Фармацевт",
+      "workplaceId": "branch_2",
+      "workplaceName": "2-Филиал (Шымбай, Базар ишинде)",
+      "actionType": "IN",
+      "status": "REJECTED_TOO_FAR",
+      "distanceMeters": 146.42,
+      "lat": 42.933575,
+      "lng": 59.773668
+    },
+    {
+      "timestamp": "2026-11-16 12:54:19",
+      "employeeId": "emp_8",
+      "name": "Феруза",
+      "role": "Фармацевт",
+      "workplaceId": "branch_2",
+      "workplaceName": "2-Филиал (Шымбай, Базар ишинде)",
+      "actionType": "IN",
+      "status": "REJECTED_TOO_FAR",
+      "distanceMeters": 146.42,
+      "lat": 42.933575,
+      "lng": 59.773668
+    },
+    {
+      "timestamp": "2026-11-16 12:51:24",
+      "employeeId": "emp_9",
+      "name": "Ахзира",
+      "role": "Фармацевт",
+      "workplaceId": "branch_2",
+      "workplaceName": "2-Филиал (Шымбай, Базар ишинде)",
+      "actionType": "IN",
+      "status": "ACCEPTED",
+      "timeStr": "12:51",
+      "distanceMeters": 0,
+      "isLive": false,
+      "penalty": 873000,
+      "lateMinutes": 291,
+      "earlyLeaveMinutes": 0
+    },
+    {
+      "timestamp": "2026-11-16 12:23:22",
+      "employeeId": "emp_9",
+      "name": "Ахзира",
+      "role": "Фармацевт",
+      "workplaceId": "branch_2",
+      "workplaceName": "2-Филиал (Шымбай, Базар ишинде)",
+      "actionType": "IN",
+      "status": "REJECTED_TOO_FAR",
+      "distanceMeters": 149.85,
+      "lat": 42.932415,
+      "lng": 59.772631
+    },
+    {
+      "timestamp": "2026-11-16 11:56:34",
+      "employeeId": "emp_9",
+      "name": "Ахзира",
+      "role": "Фармацевт",
+      "workplaceId": "branch_2",
+      "workplaceName": "2-Филиал (Шымбай, Базар ишинде)",
+      "actionType": "IN",
+      "status": "REJECTED_TOO_FAR",
+      "distanceMeters": 139.06,
+      "lat": 42.93229,
+      "lng": 59.773275
+    },
+    {
+      "timestamp": "2026-11-13 16:19:24",
+      "employeeId": "emp_15",
+      "name": "Ильхам",
+      "role": "Кассир",
+      "workplaceId": "branch_1",
+      "workplaceName": "Филиал 1 (Шымбай Бесқала)",
+      "actionType": "IN",
+      "status": "ACCEPTED",
+      "timeStr": "16:19",
+      "distanceMeters": 0,
+      "isLive": false,
+      "penalty": 1000000,
+      "lateMinutes": 499
+    },
+    {
+      "timestamp": "2026-11-13 16:17:25",
+      "employeeId": "emp_6",
+      "name": "Гульжайна",
+      "role": "Фармацевт",
+      "workplaceId": "branch_1",
+      "workplaceName": "Филиал 1 (Шымбай Бесқала)",
+      "actionType": "IN",
+      "status": "ACCEPTED",
+      "timeStr": "16:17",
+      "distanceMeters": 0,
+      "isLive": false,
+      "penalty": 1000000,
+      "lateMinutes": 497
+    },
     {
       "timestamp": "2026-11-11 20:32:03",
       "employeeId": "emp_6",

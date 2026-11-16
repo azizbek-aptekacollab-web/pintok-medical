@@ -18,9 +18,11 @@ const { getTashkentNow } = require('./attendance');
 const { tgApiRequest } = require('./tg_http');
 
 const DATA_DIR = path.join(__dirname, 'bot-data');
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
+try {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+} catch (_) {}
 const CONFIG_FILE = path.join(DATA_DIR, 'bot-config.json');
 const GROUP_STATE_FILE = path.join(DATA_DIR, 'group-bot-state.json');
 

@@ -2,12 +2,27 @@ const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
 
-const { createBotHandler } = require('./bot');
+const {
+  createBotHandler,
+  getEmployeeMainKeyboard,
+  getLocationRequestKeyboard
+} = require('./bot');
 const { createAdminBotHandler } = require('./admin_bot');
 const { AttendanceManager } = require('./attendance');
 
 async function runTests() {
-  console.log('Running bot.test.js (Employee Bot + Admin Bot)...');
+  console.log('Running bot.test.js (Employee Bot + Admin Bot end-to-end)...');
+  const mainKb = getEmployeeMainKeyboard();
+  assert.deepStrictEqual(mainKb.keyboard[0], [
+    { text: '🔵 Келдим', style: 'primary' },
+    { text: '🔴 Кеттим', style: 'danger' }
+  ]);
+  const inLocKb = getLocationRequestKeyboard('IN');
+  assert.strictEqual(inLocKb.keyboard[0][0].style, 'primary');
+  assert.ok(inLocKb.keyboard[0][0].text.includes('🔵'));
+  const outLocKb = getLocationRequestKeyboard('OUT');
+  assert.strictEqual(outLocKb.keyboard[0][0].style, 'danger');
+  assert.ok(outLocKb.keyboard[0][0].text.includes('🔴'));
   const tmpAttFile = path.join(__dirname, 'bot-data', 'test-bot-att.json');
   if (fs.existsSync(tmpAttFile)) fs.unlinkSync(tmpAttFile);
 
@@ -31,145 +46,157 @@ async function runTests() {
   });
   const adminBot = createAdminBotHandler({
     tgRequest: mockAdminTg,
+    employeeTgRequest: mockEmpTg,
     attendanceMgr: attMgr
   });
 
-  // 1. Owner starts Admin Bot -> registered for real-time notifications
+  // 1. Manager starts Admin Bot & adds Мехри with phone number via quick line: "1-Филиал Мехри +998994568584"
   await adminBot.handleAdminMessage({
     chat: { id: 777 },
-    from: { id: 777, first_name: 'Азизбек' },
+    from: { id: 777, first_name: 'Управляющий' },
     text: '/start'
   });
-  assert.ok(attMgr.getAdminChats().includes(777), 'Owner chat 777 must be registered in Admin Bot');
+  await adminBot.handleAdminMessage({
+    chat: { id: 777 },
+    from: { id: 777, first_name: 'Управляющий' },
+    text: '1-Филиал Мехри +998994568584'
+  });
 
-  // 2. Yusup (chatId 501) starts Employee Bot -> binds to Warehouse -> Yusup (Закупщик)
+  const emp1 = attMgr.getEmployees('branch_1').find(e => e.name === 'Мехри');
+  assert.strictEqual(emp1.phone, '+998994568584');
+
+  // 2. Мехри (chatId 501) enters Employee Bot -> selects 1-Филиал -> Мехри -> sends her own phone contact
   await empBot.handleUserMessage({
     chat: { id: 501 },
-    from: { id: 501, first_name: 'Юсуп' },
-    text: '🟢 Келдим'
+    from: { id: 501, first_name: 'Мехри' },
+    text: '🔵 Келдим'
   });
   await empBot.handleUserMessage({
     chat: { id: 501 },
-    from: { id: 501, first_name: 'Юсуп' },
-    text: '📦 Склад'
+    from: { id: 501, first_name: 'Мехри' },
+    text: '1-Филиал'
   });
   await empBot.handleUserMessage({
     chat: { id: 501 },
-    from: { id: 501, first_name: 'Юсуп' },
-    text: '👤 Юсуп (Закупщик)'
+    from: { id: 501, first_name: 'Мехри' },
+    text: '👤 Мехри (Фармацевт)'
+  });
+
+  // Send contact
+  await empBot.handleUserMessage({
+    chat: { id: 501 },
+    from: { id: 501, first_name: 'Мехри' },
+    contact: { phone_number: '+998994568584', user_id: 501 }
   });
 
   const bound = attMgr.getEmployeeByTelegramId(501);
-  assert.ok(bound && bound.employee.name === 'Юсуп', 'Yusup must be bound to chatId 501');
+  assert.ok(bound && bound.employee.name === 'Мехри', 'Мехри must be bound via phone contact');
 
-  // 3. Employee cannot change profile or access admin commands in Employee Bot
-  empMessages.length = 0;
-  await empBot.handleUserMessage({
-    chat: { id: 501 },
-    from: { id: 501, first_name: 'Юсуп' },
-    text: '👤 Мениң профилим'
-  });
+  // 3. Because 1-Филиал has 2 shifts, bot asks her to select 1-смена (08:00-16:00) or 2-смена (16:30-00:00)
   assert.ok(
-    empMessages[0].payload.text.includes('өзгерте алмайсыз'),
-    'Bound employee must not be allowed to change profile'
+    empMessages.some(m => m.payload.text && m.payload.text.includes('СМЕНАНЫ ТАҢЛАҢ')),
+    'Bot must prompt for shift selection in Branch 1'
   );
 
-  // 4. Yusup sends location from 25m away -> REJECTED (> 4m) and Owner notified in Admin Bot!
-  empMessages.length = 0;
-  adminMessages.length = 0;
+  // She selects 1-смена (08:00 – 16:00)
   await empBot.handleUserMessage({
     chat: { id: 501 },
-    from: { id: 501, first_name: 'Юсуп' },
-    text: '🟢 Келдим'
+    from: { id: 501, first_name: 'Мехри' },
+    text: '☀️ 1-смена (08:00 – 16:00)'
   });
+
+  // 4. She sends GPS location from 120m away (> 50m) -> REJECTED!
+  empMessages.length = 0;
   await empBot.handleUserMessage({
     chat: { id: 501 },
-    from: { id: 501, first_name: 'Юсуп' },
+    from: { id: 501, first_name: 'Мехри' },
     date: Math.floor(Date.now() / 1000),
-    location: { latitude: 42.919230, longitude: 59.778285 } // ~45m away
+    location: { latitude: 42.920200, longitude: 59.779079 } // ~140m away
   });
-  assert.ok(empMessages.some(m => m.payload.text.includes('4 метр')), 'Employee told max radius is 4m');
-  assert.ok(adminMessages.some(m => m.payload.chat_id === 777 && m.payload.text.includes('Юсуп')), 'Owner notified in Admin Bot');
+  assert.ok(
+    empMessages.some(m => m.payload.text.includes('50 метр')),
+    'Must reject location > 50m and show 50m limit'
+  );
 
-  // 5. Yusup checks in within 4m -> ACCEPTED!
-  await empBot.handleUserMessage({
-    chat: { id: 501 },
-    from: { id: 501, first_name: 'Юсуп' },
-    text: '🟢 Келдим'
+  // 5. Manager opens «🏥 Больничный» for Мехри from Admin Bot -> Employee sees it and cannot check in
+  await adminBot.handleAdminMessage({
+    chat: { id: 777 },
+    from: { id: 777, first_name: 'Управляющий' },
+    text: '🏥 Больничный басқарыў'
+  });
+  await adminBot.handleAdminMessage({
+    chat: { id: 777 },
+    from: { id: 777, first_name: 'Управляющий' },
+    text: '1-Филиал'
+  });
+  await adminBot.handleAdminMessage({
+    chat: { id: 777 },
+    from: { id: 777, first_name: 'Управляющий' },
+    text: 'Мехри'
   });
   empMessages.length = 0;
-  adminMessages.length = 0;
-  await empBot.handleUserMessage({
-    chat: { id: 501 },
-    from: { id: 501, first_name: 'Юсуп' },
-    date: Math.floor(Date.now() / 1000),
-    location: { latitude: 42.918828, longitude: 59.778217 } // ~0.3m away
+  await adminBot.handleAdminMessage({
+    chat: { id: 777 },
+    from: { id: 777, first_name: 'Управляющий' },
+    text: '🏥 Больничный АШЫЎ (Аўырып қалды)'
   });
-  assert.ok(empMessages.some(m => m.payload.text.includes('ДИЗИМГЕ АЛЫНДЫ')), 'Check-in within 4m succeeded');
-  assert.ok(adminMessages.some(m => m.payload.chat_id === 777 && m.payload.text.includes('ЖУМЫСҚА КЕЛДИ')), 'Owner notified of arrival');
 
-  // 6. Yusup presses dedicated button "💰 Штрафым ҳәм 1 млн бонус"
+  assert.strictEqual(attMgr.getEmployeeById('emp_1').onSickLeave, true);
+  assert.ok(
+    empMessages.some(m => m.payload.chat_id === 501 && m.payload.text.includes('Больничный')),
+    'Employee notified when Manager opens Sick Leave'
+  );
+
+  // Employee tries to press «🟢 Келдим» while on Sick Leave -> told she is on Sick Leave
   empMessages.length = 0;
   await empBot.handleUserMessage({
     chat: { id: 501 },
-    from: { id: 501, first_name: 'Юсуп' },
-    text: '💰 Штрафым ҳәм 1 млн бонус'
+    from: { id: 501, first_name: 'Мехри' },
+    text: '🔵 Келдим'
   });
-  const bonusReply = empMessages[0].payload.text;
-  assert.ok(bonusReply.includes('1 000 000'), 'Must display 1,000,000 sum bonus info');
-  assert.ok(bonusReply.includes('10 000'), 'Must display 10,000 sum per 5 min rule');
+  assert.ok(
+    empMessages.some(m => m.payload.text.includes('СИЗДЕ «БОЛЬНИЧНЫЙ» АШЫЛҒАН')),
+    'Employee on sick leave is not asked for location'
+  );
 
-  // 7. Owner in Admin Bot adds a new employee ("Сардор", "Экспедитор") to Warehouse
+  // Manager closes «🏥 Больничный»
   await adminBot.handleAdminMessage({
     chat: { id: 777 },
-    from: { id: 777, first_name: 'Азизбек' },
-    text: '➕ Хызметкер қосыў'
+    from: { id: 777, first_name: 'Управляющий' },
+    text: '🏥 Больничный басқарыў'
   });
   await adminBot.handleAdminMessage({
     chat: { id: 777 },
-    from: { id: 777, first_name: 'Азизбек' },
-    text: '📦 Склад'
+    from: { id: 777, first_name: 'Управляющий' },
+    text: '1-Филиал'
   });
   await adminBot.handleAdminMessage({
     chat: { id: 777 },
-    from: { id: 777, first_name: 'Азизбек' },
-    text: 'Сардор'
+    from: { id: 777, first_name: 'Управляющий' },
+    text: 'Мехри'
   });
   await adminBot.handleAdminMessage({
     chat: { id: 777 },
-    from: { id: 777, first_name: 'Азизбек' },
-    text: 'Экспедитор'
+    from: { id: 777, first_name: 'Управляющий' },
+    text: '🟢 Больничныйды ЖАБЫЎ (Жумысқа шықты)'
   });
-  assert.ok(attMgr.getEmployees('warehouse').some(e => e.name === 'Сардор'), 'Owner added new employee via Admin Bot');
+  assert.strictEqual(attMgr.getEmployeeById('emp_1').onSickLeave, false);
 
-  // 8. Owner in Admin Bot forgives Yusup's monthly penalties
-  await adminBot.handleAdminMessage({
-    chat: { id: 777 },
-    from: { id: 777, first_name: 'Азизбек' },
-    text: '⚖️ Штрафты өзгертиў / Кешириў'
+  // 6. Employee checks «📅 Календарь»
+  empMessages.length = 0;
+  await empBot.handleUserMessage({
+    chat: { id: 501 },
+    from: { id: 501, first_name: 'Мехрибан' },
+    text: '📅 Календарь'
   });
-  await adminBot.handleAdminMessage({
-    chat: { id: 777 },
-    from: { id: 777, first_name: 'Азизбек' },
-    text: '📦 Склад'
-  });
-  await adminBot.handleAdminMessage({
-    chat: { id: 777 },
-    from: { id: 777, first_name: 'Азизбек' },
-    text: '👤 Юсуп (Закупщик)'
-  });
-  await adminBot.handleAdminMessage({
-    chat: { id: 777 },
-    from: { id: 777, first_name: 'Азизбек' },
-    text: '🧹 Айлық штраflарын 0 сум етиў (1 млн бонусты тиклеў)'
-  });
-
-  const yusupStatsAfter = attMgr.getEmployeeMonthlyStats('emp_13');
-  assert.strictEqual(yusupStatsAfter.totalPenalty, 0, 'Yusup penalty must be cleared to 0 by Owner');
-  assert.strictEqual(yusupStatsAfter.bonusEligible, true, 'Yusup 1M bonus eligibility restored');
+  assert.ok(
+    empMessages[0].payload.text.includes('АЙЛЫҚ КАЛЕНДАРЬ') &&
+    empMessages[0].payload.text.includes('3 күн'),
+    'Calendar must display monthly history and 3-day excuse limit'
+  );
 
   if (fs.existsSync(tmpAttFile)) fs.unlinkSync(tmpAttFile);
-  console.log('ALL EMPLOYEE & ADMIN BOT TESTS PASSED!');
+  console.log('ALL EMPLOYEE & ADMIN BOT E2E TESTS PASSED!');
 }
 
 runTests().catch(err => {
