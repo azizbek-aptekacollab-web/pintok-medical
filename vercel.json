@@ -3,6 +3,11 @@
   "name": "pintok-medical",
   "cleanUrls": true,
   "trailingSlash": false,
+  "functions": {
+    "api/*.js": {
+      "includeFiles": "bot-data/**"
+    }
+  },
   "headers": [
     {
       "source": "/sw.js",
