@@ -5,7 +5,7 @@
   "main": "start_all.js",
   "scripts": {
     "start": "node start_all.js",
-    "test": "node attendance.test.js && node bot.test.js"
+    "test": "node attendance.test.js && node bot.test.js && node group_bot.test.js"
   },
   "engines": {
     "node": ">=18.0.0"

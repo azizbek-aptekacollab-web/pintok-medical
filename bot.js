@@ -1141,6 +1141,9 @@ async function pollUpdates() {
           if (update.my_chat_member) {
             await groupBotHandler.handleChatMemberUpdate(update.my_chat_member);
           }
+          if (update.callback_query) {
+            await groupBotHandler.handleGroupCallbackQuery(update.callback_query);
+          }
           const incomingMsg = update.message || update.edited_message;
           if (incomingMsg) {
             await handleUserMessage(incomingMsg);
