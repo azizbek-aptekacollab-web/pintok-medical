@@ -39,9 +39,15 @@ function writeJsonSafe(filePath, data) {
 }
 
 function buildAttendanceSnapshot(dateStr) {
-  const raw = readJsonSafe(ATTENDANCE_FILE, { employees: {}, records: {} });
+  const raw = readJsonSafe(ATTENDANCE_FILE, { employees: {}, days: {}, records: {} });
   const employeesMap = raw.employees || {};
-  const dayRecords = (raw.records && raw.records[dateStr]) || {};
+  const daysObj = raw.days && typeof raw.days === 'object' ? raw.days : {};
+  const recordsObj = raw.records && typeof raw.records === 'object' ? raw.records : {};
+  const dayRecords = daysObj[dateStr] || recordsObj[dateStr] || {};
+  const availableDates = Object.keys(daysObj)
+    .filter((d) => daysObj[d] && Object.keys(daysObj[d]).length > 0)
+    .sort();
+  const latestAttendanceDate = availableDates.length ? availableDates[availableDates.length - 1] : null;
 
   const branchMap = {};
   for (const wp of WORKPLACES) {
@@ -88,15 +94,19 @@ function buildAttendanceSnapshot(dateStr) {
     }
 
     const rec = dayRecords[empId] || null;
-    const isSick = Boolean(emp.sickLeave && emp.sickLeave.active);
-    const hasCheckIn = Boolean(rec && rec.checkIn && rec.checkIn.time);
-    const hasCheckOut = Boolean(rec && rec.checkOut && rec.checkOut.time);
+    const isSick = Boolean(
+      emp.onSickLeave || (emp.sickLeave && emp.sickLeave.active) || (rec && rec.isSickLeave)
+    );
+    const arrTime = rec ? (rec.arrTime && rec.arrTime !== '—' ? rec.arrTime : (rec.checkIn && rec.checkIn.time) || null) : null;
+    const leaveTime = rec ? (rec.leaveTime && rec.leaveTime !== '—' ? rec.leaveTime : (rec.checkOut && rec.checkOut.time) || null) : null;
+    const hasCheckIn = Boolean(arrTime);
     const lateMinutes = Number((rec && rec.lateMinutes) || 0);
-    const fine = Number((rec && rec.fine) || 0);
+    const fine = Number((rec && (rec.penalty !== undefined ? rec.penalty : rec.fine)) || 0);
+    const isLate = Boolean(rec && (rec.isLate || lateMinutes > 0));
 
     let status = 'absent';
     if (isSick) status = 'sick';
-    else if (hasCheckIn && lateMinutes > 0) status = 'late';
+    else if (hasCheckIn && isLate) status = 'late';
     else if (hasCheckIn) status = 'present';
 
     const item = {
@@ -107,11 +117,11 @@ function buildAttendanceSnapshot(dateStr) {
       branchName: branchMap[bId].name,
       shift: (rec && rec.shiftId) || emp.shiftId || 'SHIFT_1',
       status,
-      checkInTime: (rec && rec.checkIn && rec.checkIn.time) || null,
-      checkOutTime: (rec && rec.checkOut && rec.checkOut.time) || null,
+      checkInTime: arrTime,
+      checkOutTime: leaveTime,
       lateMinutes,
       fine,
-      excused: Boolean(rec && rec.excused)
+      excused: Boolean(rec && (rec.excused || rec.excuseStatus === 'approved'))
     };
 
     const br = branchMap[bId];
@@ -138,6 +148,8 @@ function buildAttendanceSnapshot(dateStr) {
 
   return {
     date: dateStr,
+    latestAttendanceDate,
+    availableDates,
     summary: {
       totalStaff,
       present: totalPresent,

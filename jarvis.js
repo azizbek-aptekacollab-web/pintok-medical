@@ -377,6 +377,14 @@
           time: 'LIVE',
           text: `${sum.late} хызметкер кешигип келди. Жәми штраф: ${formatSum(sum.totalFine)}.`
         });
+      } else if (sum.present === 0 && att && att.latestAttendanceDate && att.latestAttendanceDate !== state.date) {
+        alerts.push({
+          tone: 'amber',
+          title: 'БҮГИНГИ ТАБЕЛЬ БОС',
+          time: att.latestAttendanceDate,
+          text: `Бүгин (${state.date}) еле белги жоқ. Соңғы табель: ${att.latestAttendanceDate} — үстин басып ашыўға болады.`,
+          jumpDate: att.latestAttendanceDate
+        });
       } else {
         alerts.push({
           tone: '',
@@ -413,7 +421,7 @@
 
       alertsEl.innerHTML = alerts
         .map(
-          (a) => `<div class="alert-card ${a.tone}">
+          (a) => `<div class="alert-card ${a.tone}" ${a.jumpDate ? `data-jump-date="${escapeHtml(a.jumpDate)}" style="cursor:pointer;"` : ''}>
             <div class="alert-top">
               <span>${escapeHtml(a.title)}</span>
               <span class="alert-time">${escapeHtml(a.time)}</span>
@@ -421,6 +429,54 @@
             <p class="alert-text">${escapeHtml(a.text)}</p>
           </div>`
         )
+        .join('');
+
+      alertsEl.querySelectorAll('[data-jump-date]').forEach((el) => {
+        el.addEventListener('click', () => {
+          state.date = el.dataset.jumpDate;
+          const dp = document.getElementById('jarvisDatePicker');
+          if (dp) dp.value = state.date;
+          loadAllData();
+          showToast(`📅 ${state.date} табели жүкленди`);
+        });
+      });
+    }
+
+    // Populate live system feed inside center column when chat is empty (matching Stitch layout)
+    const feedEl = document.getElementById('chatFeed');
+    if (feedEl && state.messages.length === 0) {
+      const nowTime = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const lateList = [];
+      for (const br of (att && att.branches) || []) {
+        for (const e of br.employees || []) {
+          if (e.status === 'late') lateList.push(`${e.name} (+${e.lateMinutes} мин, ${br.name})`);
+        }
+      }
+      const logs = [
+        {
+          cls: 'user',
+          meta: `[${nowTime}] JARVIS:`,
+          body: `4 филиал мониторинги актив. Жәми хызметкер: ${sum.totalStaff}, жумыста: ${sum.present}.`
+        },
+        {
+          cls: 'assistant',
+          meta: `[${nowTime}] SYSTEM:`,
+          body: st
+            ? `F-Apteka саўда: ${formatSum(st.totalRevenue)} (${st.totalChecks} чек).`
+            : `F-Apteka шлюзи тайын. API жалғанғанша «F-APTEKA САЎДА» бөлиминен скриншот/CSV жүклей аласыз.`
+        },
+        {
+          cls: 'assistant',
+          meta: `[${nowTime}] BOT:`,
+          body: lateList.length
+            ? `Кешигиўлер: ${lateList.slice(0, 3).join('; ')}.`
+            : (att && att.latestAttendanceDate && att.latestAttendanceDate !== state.date
+                ? `Бүгин табель таза. Соңғы жазыўлар ${att.latestAttendanceDate} сәнесинде бар.`
+                : 'Барлық филиалда кешигиў дизимге алынбады.')
+        }
+      ];
+      feedEl.innerHTML = logs
+        .map((l) => `<div class="msg ${l.cls}"><div class="msg-meta">${escapeHtml(l.meta)}</div><div class="msg-body"><p>${escapeHtml(l.body)}</p></div></div>`)
         .join('');
     }
   }
@@ -557,6 +613,11 @@
     setJarvisState('thinking');
     const sendBtn = document.getElementById('btnSend');
     if (sendBtn) sendBtn.disabled = true;
+
+    if (state.messages.length === 0) {
+      const feed = document.getElementById('chatFeed');
+      if (feed) feed.innerHTML = '';
+    }
 
     const timeTag = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     appendMessage('user', `[${timeTag}] COMMANDER:`, clean);
@@ -989,7 +1050,7 @@
 
     document.getElementById('btnClearChat').addEventListener('click', () => {
       state.messages = [];
-      document.getElementById('chatFeed').innerHTML = '';
+      renderCentralHUD();
       showToast('Чат тазаланды');
     });
 
