@@ -1,4 +1,4 @@
-// PINTOK APTEKA — J.A.R.V.I.S. AI CORE v4.2 HUD Client
+// PINTOK APTEKA — J.A.R.V.I.S. AI CORE v4.2 (Stitch Brand-Aligned + Jarıq Fon Client)
 (() => {
   'use strict';
 
@@ -7,14 +7,15 @@
     fApteka: 'jarvis_f_apteka_cfg_v1',
     salesCache: 'jarvis_sales_cache_v1',
     competitors: 'jarvis_competitors_v1',
-    pin: 'jarvis_pin_v1'
+    pin: 'jarvis_pin_v1',
+    theme: 'jarvis_theme_v1'
   };
 
   const DEFAULT_BRANCHES = [
-    { id: 'branch_1', code: 'FILIAL #01 // SHIMBAY 5-ETAJ', name: '1-Филиал' },
-    { id: 'branch_2', code: 'FILIAL #02 // SHIMBAY BAZAR', name: '2-Филиал' },
-    { id: 'branch_3', code: 'FILIAL #03 // XOJELI', name: '3-Филиал' },
-    { id: 'branch_4', code: 'FILIAL #04 // NOKIS', name: '4-Филиал' }
+    { id: 'branch_1', code: 'FILIAL #01 // SHIMBAY 5-ETAJ', cls: '' },
+    { id: 'branch_2', code: 'FILIAL #02 // SHIMBAY BAZAR', cls: 'c2' },
+    { id: 'branch_3', code: 'FILIAL #03 // XOJELI', cls: 'c3' },
+    { id: 'branch_4', code: 'FILIAL #04 // NOKIS', cls: '' }
   ];
 
   const state = {
@@ -120,21 +121,43 @@
     });
   }
 
+  // ==================== THEME TOGGLE (Brand Aligned Dark <-> Jarıq Fon Light) ====================
+  function applyTheme(mode) {
+    const isLight = mode === 'light';
+    document.documentElement.className = isLight ? 'light' : 'dark';
+    document.body.className = isLight ? 'theme-light' : 'theme-dark';
+    const icon = document.getElementById('themeIcon');
+    const lbl = document.getElementById('themeLabel');
+    if (icon) icon.textContent = isLight ? 'dark_mode' : 'light_mode';
+    if (lbl) lbl.textContent = isLight ? 'Qarańǵı HUD' : 'Jarıq Fon';
+    saveJsonLS(LS_KEYS.theme, mode);
+  }
+
+  function initTheme() {
+    const saved = loadJsonLS(LS_KEYS.theme, 'dark');
+    applyTheme(saved === 'light' ? 'light' : 'dark');
+    const btn = document.getElementById('btnThemeToggle');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const next = document.body.classList.contains('theme-light') ? 'dark' : 'light';
+        applyTheme(next);
+      });
+    }
+  }
+
   // ==================== ECG WAVEFORM & LED BAR ====================
   function initTelemetryAnimations() {
     const ledBar = document.getElementById('ledBar');
     if (ledBar) {
-      const count = 56;
-      ledBar.innerHTML = Array.from({ length: count }, (_, i) =>
+      ledBar.innerHTML = Array.from({ length: 48 }, (_, i) =>
         `<span class="led-dot ${i % 2 === 0 ? '' : 'mint'}"></span>`
       ).join('');
       const dots = Array.from(ledBar.children);
       setInterval(() => {
         const active = state.isSending;
         dots.forEach((d, idx) => {
-          const wave = Math.sin(Date.now() / (active ? 90 : 280) + idx * 0.45);
+          const wave = Math.sin(Date.now() / (active ? 85 : 260) + idx * 0.45);
           d.style.opacity = active ? String(0.45 + 0.55 * Math.abs(wave)) : String(0.25 + 0.45 * Math.abs(wave));
-          d.style.height = active ? `${4 + Math.round(8 * Math.abs(wave))}px` : `${4 + Math.round(3 * Math.abs(wave))}px`;
         });
       }, 95);
     }
@@ -145,38 +168,52 @@
     let phase = 0;
 
     function drawECG() {
-      const w = canvas.clientWidth || 420;
-      const h = canvas.height || 54;
+      const w = canvas.clientWidth || 460;
+      const h = canvas.height || 64;
       if (canvas.width !== w) canvas.width = w;
 
       ctx.clearRect(0, 0, w, h);
+
+      // Subtle ECG grid
+      ctx.strokeStyle = 'rgba(0, 136, 255, 0.12)';
+      ctx.lineWidth = 0.6;
+      for (let gx = 0; gx < w; gx += 16) {
+        ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, h); ctx.stroke();
+      }
+      for (let gy = 0; gy < h; gy += 16) {
+        ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(w, gy); ctx.stroke();
+      }
+
+      // Waveform
       ctx.beginPath();
-      const mid = h * 0.55;
+      const mid = h * 0.54;
       for (let x = 0; x < w; x++) {
-        const t = (x + phase) % 130;
+        const t = (x + phase) % 135;
         let y = mid;
         if (t > 40 && t < 48) y = mid - 5;
         else if (t >= 48 && t < 53) y = mid + 8;
-        else if (t >= 53 && t < 59) y = mid - 22;
-        else if (t >= 59 && t < 65) y = mid + 13;
+        else if (t >= 53 && t < 59) y = mid - 24;
+        else if (t >= 59 && t < 65) y = mid + 15;
         else if (t >= 65 && t < 74) y = mid - 4;
-        else y = mid + Math.sin((x + phase) * 0.08) * 1.3;
+        else y = mid + Math.sin((x + phase) * 0.08) * 1.2;
 
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
 
       const grad = ctx.createLinearGradient(0, 0, w, 0);
-      grad.addColorStop(0, '#00e5ff');
-      grad.addColorStop(0.5, '#00ffa3');
-      grad.addColorStop(1, '#00e5ff');
+      grad.addColorStop(0, '#0088ff');
+      grad.addColorStop(0.45, '#38bdf8');
+      grad.addColorStop(0.85, '#22c55e');
+      grad.addColorStop(1, '#10b981');
       ctx.strokeStyle = grad;
       ctx.lineWidth = 2;
-      ctx.shadowColor = '#00ffa3';
-      ctx.shadowBlur = 8;
+      ctx.shadowColor = '#22c55e';
+      ctx.shadowBlur = 7;
       ctx.stroke();
+      ctx.shadowBlur = 0;
 
-      phase += state.isSending ? 3.2 : 1.6;
+      phase += state.isSending ? 3.2 : 1.5;
       requestAnimationFrame(drawECG);
     }
     requestAnimationFrame(drawECG);
@@ -184,9 +221,9 @@
 
   function setJarvisState(mode) {
     const badge = document.getElementById('jarvisStateBadge');
-    const stage = document.querySelector('.holo-stage');
+    const stage = document.getElementById('holoStage');
     if (badge) {
-      badge.textContent = mode === 'thinking' ? 'STATE: PROCESSING...' : 'STATE: IDLE';
+      badge.textContent = mode === 'thinking' ? 'STATE: PROCESSING...' : 'STATE: IDLE · LISTENING';
     }
     if (stage) {
       stage.classList.toggle('thinking', mode === 'thinking');
@@ -197,8 +234,7 @@
     const safePct = Math.max(0, Math.min(100, Math.round(pct)));
     const ring = document.getElementById(ringId);
     const val = document.getElementById(valId);
-    const circ = 201;
-    if (ring) ring.style.strokeDashoffset = String(circ - (circ * safePct) / 100);
+    if (ring) ring.setAttribute('stroke-dasharray', `${safePct}, 100`);
     if (val) val.textContent = `${safePct}%`;
   }
 
@@ -267,15 +303,24 @@
     const sum = (att && att.summary) || { totalStaff: 0, present: 0, late: 0, absent: 0, totalFine: 0 };
     const st = state.salesToday;
 
-    // Total Revenue
-    const totalRevEl = document.getElementById('hudTotalRevenue');
-    if (totalRevEl) {
-      totalRevEl.textContent = st && st.totalRevenue
-        ? `${Math.round(st.totalRevenue).toLocaleString('ru-RU').replace(/\u00A0/g, ',')} UZS`
-        : 'F-APTEKA КҮТИЛМЕКТЕ';
+    const stripStaff = document.getElementById('stripStaffRatio');
+    if (stripStaff) stripStaff.textContent = `${sum.present}/${sum.totalStaff}`;
+    const stripSync = document.getElementById('stripSyncState');
+    if (stripSync) stripSync.textContent = st ? 'SYNCED' : 'READY';
+
+    const revEl = document.getElementById('hudTotalRevenue');
+    const revSub = document.getElementById('hudRevenueSub');
+    const badgeText = document.getElementById('hudSalesBadgeText');
+    if (st && st.totalRevenue) {
+      if (revEl) revEl.textContent = Math.round(st.totalRevenue).toLocaleString('ru-RU').replace(/\u00A0/g, ',');
+      if (revSub) revSub.textContent = `Чеклер: ${st.totalChecks} · Орташа чек: ${formatSum(st.avgCheck)}`;
+      if (badgeText) badgeText.textContent = st.source || 'F-APTEKA';
+    } else {
+      if (revEl) revEl.textContent = '0';
+      if (revSub) revSub.textContent = 'F-Apteka есабаты күтилмекте · Қызлар табели актив';
+      if (badgeText) badgeText.textContent = 'WAITING SYNC';
     }
 
-    // Branch HUD Cards
     const branchList = document.getElementById('hudBranchList');
     if (branchList) {
       const attBranches = (att && att.branches) || [];
@@ -285,86 +330,86 @@
       branchList.innerHTML = DEFAULT_BRANCHES.map((def, idx) => {
         const abr = attBranches[idx] || { totalStaff: 0, present: 0, late: 0 };
         const sbr = salesBranches.find((b) => String(b.name || '').includes(`${idx + 1}`)) || salesBranches[idx] || null;
-
-        const revText = sbr ? formatShortUZS(sbr.revenue) : `${abr.present}/${abr.totalStaff} ҚЫЗ`;
         const staffPct = abr.totalStaff > 0 ? Math.round((abr.present / abr.totalStaff) * 100) : 0;
         const barPct = sbr ? Math.max(12, Math.round((Number(sbr.revenue || 0) / maxRev) * 100)) : staffPct;
-        const hasIssue = abr.late > 0 || (sbr && sbr.returns > 0);
+        const isWarn = abr.late > 0 || (sbr && sbr.returns > 0);
+        const amtText = sbr ? formatShortUZS(sbr.revenue) : `${abr.present}/${abr.totalStaff} ҚЫЗ`;
 
-        return `<div class="branch-hud-card">
-          <div class="branch-top-row">
-            <div class="branch-code">${def.code}</div>
-            <div class="branch-rev">${revText}</div>
+        return `<div class="branch-card ${isWarn ? 'warn' : def.cls}">
+          <div class="branch-accent-bar"></div>
+          <div class="branch-top">
+            <div class="branch-name"><span class="branch-idx">0${idx + 1}//</span>${def.code}</div>
+            <div class="branch-amt">${amtText}</div>
           </div>
-          <div class="neon-bar-track">
-            <div class="neon-bar-fill ${hasIssue ? 'amber' : ''}" style="width: ${barPct}%"></div>
+          <div class="branch-track">
+            <div class="branch-fill" style="width: ${barPct}%"></div>
           </div>
-          <div class="branch-meta-row">
-            <span class="${hasIssue ? 'status-warn' : 'status-online'}">
-              ${abr.late > 0 ? `ATTENDANCE: ${abr.late} КЕШИКТИ` : 'BOT-CONTROL: ONLINE'}
+          <div class="branch-foot">
+            <span class="bot-state">
+              <span class="pulse-dot" style="width:6px;height:6px;${isWarn ? 'background:var(--amber);box-shadow:0 0 6px var(--amber);' : ''}"></span>
+              ${abr.late > 0 ? `ATTENDANCE: ${abr.late} LATE` : 'BOT-CONTROL: ONLINE'}
             </span>
-            <span>ТАБЕЛЬ: ${staffPct}% (${abr.present}/${abr.totalStaff})</span>
+            <span class="staff-pct">STAFF: ${staffPct}% (${abr.present}/${abr.totalStaff})</span>
           </div>
         </div>`;
       }).join('');
     }
 
-    // Bottom 3 metric tiles in left panel
-    document.getElementById('hudMetric1Val').textContent = `${sum.present}/${sum.totalStaff}`;
-    document.getElementById('hudMetric2Val').textContent = String(sum.late);
-    document.getElementById('hudMetric3Val').textContent = st && st.avgCheck
-      ? `${Math.round(st.avgCheck / 1000)}K UZS`
-      : `${st ? st.totalChecks : 0} ЧЕК`;
+    const pctTotal = sum.totalStaff > 0 ? Math.round((sum.present / sum.totalStaff) * 100) : 0;
+    document.getElementById('hudMetric1Val').textContent = String(sum.present);
+    document.getElementById('hudMetric1Total').textContent = `/${sum.totalStaff}`;
+    document.getElementById('hudMetric1Sub').textContent = `${pctTotal}% ACTIVE`;
+    document.getElementById('hudMetric2Val').textContent = String(sum.late).padStart(2, '0');
+    document.getElementById('hudMetric2Sub').textContent = sum.late > 0 ? `ШТРАФ: ${formatSum(sum.totalFine)}` : 'КЕШИГИЎ ЖОҚ';
+    document.getElementById('hudMetric3Val').textContent = st && st.avgCheck ? `${Math.round(st.avgCheck / 1000)}K` : '0';
+    document.getElementById('hudMetric3Sub').textContent = `${st ? st.totalChecks : 0} ЧЕК`;
 
-    // Donut Gauges
     const activeAiCount = Object.values(state.configuredProviders).filter(Boolean).length;
-    setDonut('gaugeAiRing', 'gaugeAiVal', Math.min(100, 35 + activeAiCount * 20));
-    const staffPctTotal = sum.totalStaff > 0 ? Math.round((sum.present / sum.totalStaff) * 100) : 94;
-    setDonut('gaugeStaffRing', 'gaugeStaffVal', staffPctTotal);
-    setDonut('gaugeSpeedRing', 'gaugeSpeedVal', state.salesToday ? 98 : 92);
+    setDonut('gaugeAiRing', 'gaugeAiVal', Math.min(100, 45 + activeAiCount * 15));
+    setDonut('gaugeStaffRing', 'gaugeStaffVal', sum.totalStaff > 0 ? pctTotal : 94);
+    setDonut('gaugeSpeedRing', 'gaugeSpeedVal', st ? 98 : 94);
 
-    // Smart Pharma Alerts
     const alertsEl = document.getElementById('smartAlertsList');
     if (alertsEl) {
       const alerts = [];
       if (sum.late > 0) {
         alerts.push({
           tone: 'amber',
-          title: `▲ КЕШИГИЎ ЕСКЕРТИЎИ (${sum.late})`,
+          title: `КЕШИГИЎ ЕСКЕРТИЎИ (${sum.late})`,
           time: 'LIVE',
-          text: `${sum.late} хызметкер бүгин кешигип келди. Жәми штраф: ${formatSum(sum.totalFine)}.`
+          text: `${sum.late} хызметкер кешигип келди. Жәми штраф: ${formatSum(sum.totalFine)}.`
         });
       } else {
         alerts.push({
-          tone: 'green',
-          title: '✓ ҚЫЗЛАР ТАБЕЛИ ТӘРТИПТЕ',
+          tone: '',
+          title: 'ҚЫЗЛАР ТАБЕЛИ ТӘРТИПТЕ',
           time: 'LIVE',
-          text: `${sum.present}/${sum.totalStaff} фармацевт ўақтында жумыста. Кешигиў: 0.`
+          text: `${sum.present}/${sum.totalStaff} фармацевт жумыста. Кешигиў: 0.`
         });
       }
 
       if (st && st.totalRevenue > 0) {
         alerts.push({
           tone: 'cyan',
-          title: '⚡ F-APTEKA ЕСАБАТЫ ТҮСТИ',
+          title: 'F-APTEKA ЕСАБАТЫ ТҮСТИ',
           time: st.source || 'SYNC',
-          text: `Жәми саўда: ${formatSum(st.totalRevenue)} (${st.totalChecks} чек, орташа: ${formatSum(st.avgCheck)}).`
+          text: `Жәми саўда: ${formatSum(st.totalRevenue)} (${st.totalChecks} чек).`
         });
       } else {
         alerts.push({
           tone: 'cyan',
-          title: '⚡ F-APTEKA ШЛЮЗИ ТАЙЫН',
+          title: 'F-APTEKA ШЛЮЗИ ТАЙЫН',
           time: 'READY',
-          text: 'F-Apteka API жалғанғанша «F-APTEKA САЎДА» бөлиминен скриншот ямаса CSV жүклей аласыз.'
+          text: 'F-Apteka API жалғанғанша «F-APTEKA САЎДА» бөлиминен скриншот/CSV жүклей аласыз.'
         });
       }
 
       alerts.push({
-        tone: state.competitors.length ? 'green' : 'amber',
-        title: state.competitors.length ? '✓ БӘСЕКИЛЕСЛЕР БАЗАСЫ АКТИВ' : '▲ БӘСЕКИЛЕС МАҒЛЫЎМАТЫ',
+        tone: state.competitors.length ? '' : 'amber',
+        title: state.competitors.length ? 'БӘСЕКИЛЕСЛЕР БАЗАСЫ АКТИВ' : 'БӘСЕКИЛЕС МАҒЛЫЎМАТЫ',
         time: `${state.competitors.length} АПТЕКА`,
         text: state.competitors.length
-          ? `${state.competitors.length} бәсекилес аптека анализге тайын. «БӘСЕКИЛЕС & ИДЕЯ» бөлиминде.`
+          ? `${state.competitors.length} бәсекилес аптека анализге тайын.`
           : 'Әтираптағы бәсекилес аптекаларды киритиң — Jarvis стратегия дүзеди.'
       });
 
@@ -375,7 +420,7 @@
               <span>${escapeHtml(a.title)}</span>
               <span class="alert-time">${escapeHtml(a.time)}</span>
             </div>
-            <div class="alert-text">${escapeHtml(a.text)}</div>
+            <p class="alert-text">${escapeHtml(a.text)}</p>
           </div>`
         )
         .join('');
@@ -515,10 +560,11 @@
     const sendBtn = document.getElementById('btnSend');
     if (sendBtn) sendBtn.disabled = true;
 
-    appendMessage('user', 'COMMANDER', clean);
+    const timeTag = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    appendMessage('user', `[${timeTag}] COMMANDER:`, clean);
     state.messages.push({ role: 'user', content: clean });
 
-    const label = state.provider === 'council' ? 'J.A.R.V.I.S. // 3-AI КЕҢЕС' : `J.A.R.V.I.S. // ${state.provider.toUpperCase()}`;
+    const label = state.provider === 'council' ? `[${timeTag}] JARVIS // 3-AI КЕҢЕС:` : `[${timeTag}] JARVIS // ${state.provider.toUpperCase()}:`;
     const typingEl = appendMessage('assistant', label, 'Таллап атырман...');
 
     try {
@@ -526,7 +572,7 @@
       typingEl.querySelector('.msg-body').innerHTML = renderMarkdownLite(data.reply);
       state.messages.push({ role: 'assistant', content: data.reply });
     } catch (err) {
-      typingEl.querySelector('.msg-body').innerHTML = `<p style="color:#ff4d6d;">⚠️ ${escapeHtml(err.message)}</p>`;
+      typingEl.querySelector('.msg-body').innerHTML = `<p class="text-red">⚠️ ${escapeHtml(err.message)}</p>`;
     } finally {
       state.isSending = false;
       setJarvisState('idle');
@@ -932,7 +978,7 @@
       });
     });
 
-    document.querySelectorAll('.quick-cmd-btn[data-prompt]').forEach((btn) => {
+    document.querySelectorAll('.macro-btn[data-prompt]').forEach((btn) => {
       btn.addEventListener('click', () => {
         switchTab('hud');
         sendChatMessage(btn.dataset.prompt);
@@ -951,10 +997,16 @@
 
     const chatForm = document.getElementById('chatForm');
     const chatInput = document.getElementById('chatInput');
+    const cursorTag = document.getElementById('cursorPosTag');
+    chatInput.addEventListener('input', () => {
+      if (cursorTag) cursorTag.textContent = `LN:01 COL:${String(chatInput.value.length).padStart(2, '0')}`;
+    });
+
     chatForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const val = chatInput.value;
       chatInput.value = '';
+      if (cursorTag) cursorTag.textContent = 'LN:01 COL:00';
       switchTab('hud');
       sendChatMessage(val);
     });
@@ -1128,6 +1180,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     initPinLock();
     initPwaInstall();
     initTelemetryAnimations();
