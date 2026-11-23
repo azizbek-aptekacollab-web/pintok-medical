@@ -23,7 +23,7 @@
       ]
     },
     {
-      "source": "/manifest.json",
+      "source": "/(manifest|jarvis-manifest).json",
       "headers": [
         {
           "key": "Content-Type",

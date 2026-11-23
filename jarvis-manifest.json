@@ -1,0 +1,24 @@
+{
+  "name": "Jarvis — PINTOK APTEKA AI Жәрдемши",
+  "short_name": "Jarvis AI",
+  "description": "PINTOK APTEKA басқарыўшысының жеке AI жәрдемшиси: F-Apteka саўда, қызлар табели, бәсекилеслер анализи ҳәм идеялар",
+  "start_url": "./jarvis.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#070d19",
+  "theme_color": "#0b1324",
+  "icons": [
+    {
+      "src": "logo-apteka.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo-apteka.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}

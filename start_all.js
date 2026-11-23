@@ -1,9 +1,33 @@
-// PINTOK APTEKA — 24/7 Cloud Runner (Employee Bot + Admin Bot + Group Bot + Web Dashboard)
+// PINTOK APTEKA — 24/7 Cloud Runner (Employee Bot + Admin Bot + Group Bot + Web Dashboard + Jarvis AI)
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { loadEnv } = require('./jarvis_env');
+loadEnv();
+
 const { pollUpdates } = require('./bot');
 const { pollAdminUpdates } = require('./admin_bot');
+const jarvisChatHandler = require('./api/jarvis-chat');
+const jarvisDataHandler = require('./api/jarvis-data');
+const fAptekaSyncHandler = require('./api/f-apteka-sync');
+
+function readRequestBody(req, maxBytes = 6 * 1024 * 1024) {
+  return new Promise((resolve, reject) => {
+    let total = 0;
+    const chunks = [];
+    req.on('data', (chunk) => {
+      total += chunk.length;
+      if (total > maxBytes) {
+        reject(new Error('Body too large'));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    req.on('error', reject);
+  });
+}
 
 const PORT = Number(process.env.PORT) || 8080;
 const ROOT_DIR = __dirname;
@@ -22,7 +46,7 @@ const MIME_TYPES = {
 };
 
 function startWebServer() {
-  const server = http.createServer((req, res) => {
+  const server = http.createServer(async (req, res) => {
     const urlPath = (req.url || '/').split('?')[0];
 
     if (urlPath === '/health') {
@@ -35,6 +59,29 @@ function startWebServer() {
         service: 'pintok-apteka',
         uptimeSeconds: Math.round(process.uptime())
       }));
+      return;
+    }
+
+    const apiRoutes = {
+      '/api/jarvis-chat': jarvisChatHandler,
+      '/api/jarvis-data': jarvisDataHandler,
+      '/api/f-apteka-sync': fAptekaSyncHandler
+    };
+    if (apiRoutes[urlPath]) {
+      try {
+        if (req.method === 'POST' || req.method === 'PUT') {
+          req.body = await readRequestBody(req);
+        }
+        await apiRoutes[urlPath](req, res);
+      } catch (err) {
+        if (!res.headersSent) {
+          res.writeHead(500, {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Access-Control-Allow-Origin': '*'
+          });
+          res.end(JSON.stringify({ ok: false, error: err.message || 'Server error' }));
+        }
+      }
       return;
     }
 

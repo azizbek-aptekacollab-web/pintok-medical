@@ -1,11 +1,15 @@
 // Service Worker для мобильного приложения сети аптек «Пинток Медикал»
-const CACHE_NAME = 'pintok-medical-pwa-v1';
+const CACHE_NAME = 'pintok-medical-pwa-v2';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './manifest.json',
+  './jarvis.html',
+  './jarvis.css',
+  './jarvis.js',
+  './jarvis-manifest.json',
   './logo-apteka.jpg'
 ];
 
@@ -32,6 +36,10 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
+  const reqUrl = new URL(e.request.url);
+  if (e.request.method !== 'GET' || reqUrl.pathname.startsWith('/api/')) {
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -39,7 +47,7 @@ self.addEventListener('fetch', (e) => {
       }
       return fetch(e.request).catch(() => {
         if (e.request.destination === 'document') {
-          return caches.match('./index.html');
+          return caches.match(reqUrl.pathname.includes('jarvis') ? './jarvis.html' : './index.html');
         }
       });
     })

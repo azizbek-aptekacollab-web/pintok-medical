@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="kaa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Jarvis AI — PINTOK APTEKA Басқарыўшы жәрдемшиси</title>
+
+  <link rel="manifest" href="jarvis-manifest.json" />
+  <meta name="theme-color" content="#0b1324" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Jarvis AI" />
+  <link rel="apple-touch-icon" href="logo-apteka.jpg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="jarvis.css" />
+</head>
+<body>
+
+  <!-- PIN Қулпы (қәлегенде Сазлаўдан қосылады) -->
+  <div class="pin-overlay hidden" id="pinOverlay">
+    <div class="pin-card">
+      <div class="jarvis-orb sm"></div>
+      <h2>Jarvis AI Қулпы</h2>
+      <p>Кириў ушын 4 санлы PIN-кодты киритиң</p>
+      <input type="password" inputmode="numeric" maxlength="4" id="pinUnlockInput" placeholder="••••" autocomplete="off" />
+      <button type="button" class="btn-primary full" id="btnPinUnlock">Ашыў</button>
+      <div class="pin-error" id="pinError"></div>
+    </div>
+  </div>
+
+  <!-- Жоқарғы панель -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="jarvis-orb"></div>
+      <div>
+        <div class="topbar-title">JARVIS <span class="badge-live">ONLINE</span></div>
+        <div class="topbar-sub">PINTOK APTEKA · 4 филиал</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <input type="date" id="jarvisDatePicker" class="date-pill" title="Сәнени таңлаў" />
+      <a href="index.html" class="icon-btn" title="Аптека панелине өтиў">🏥</a>
+    </div>
+  </header>
+
+  <!-- Тийкарғы контент -->
+  <main class="app-main">
+
+    <!-- ==================== 1. JARVIS ЧАТ ==================== -->
+    <section class="tab-view active" id="tab-chat">
+      <div class="provider-bar">
+        <button type="button" class="prov-chip active" data-provider="gemini">
+          <span class="dot" id="dot-gemini"></span> Gemini
+        </button>
+        <button type="button" class="prov-chip" data-provider="openai">
+          <span class="dot" id="dot-openai"></span> ChatGPT
+        </button>
+        <button type="button" class="prov-chip" data-provider="claude">
+          <span class="dot" id="dot-claude"></span> Claude
+        </button>
+        <button type="button" class="prov-chip" data-provider="openrouter">
+          <span class="dot" id="dot-openrouter"></span> OpenRouter
+        </button>
+        <button type="button" class="prov-chip council" data-provider="council" title="Барлық қосылған AI моделлерден бир ўақытта жуўап алыў">
+          ⚡ Кеңес
+        </button>
+      </div>
+
+      <div class="quick-prompts">
+        <button type="button" class="quick-chip" data-prompt="Бүгинги 4 филиалдың келип-кетиў ҳәм саўда жағдайы бойынша қысқа есабат бер.">📊 Бүгинги есабат</button>
+        <button type="button" class="quick-chip" data-prompt="Қызлардың бүгинги келип-кетиўин таллап, ким кешиккенин ҳәм қандай шара көриў кереклигин айт.">👩‍⚕️ Қызлар табели</button>
+        <button type="button" class="quick-chip" data-prompt="Аптекада саўданы ҳәм орташа чекти көтериў ушын бүгин қолланыўға болатуғын 5 нақты идея бер.">💡 Саўданы көтериў</button>
+        <button type="button" class="quick-chip" data-prompt="Бәсекилес аптекаларды таллап, бизде клиентлерди көбейтиў ушын стратегия дүз.">🎯 Бәсекилес анализи</button>
+      </div>
+
+      <div class="chat-feed" id="chatFeed">
+        <div class="msg assistant">
+          <div class="msg-meta">JARVIS · Система</div>
+          <div class="msg-body">
+            Ассалаўма алейкум! Мен <strong>Jarvis</strong> — «PINTOK APTEKA» басқарыўшысының жеке AI жәрдемшисимен.<br><br>
+            Қызлардың келип-кетиўи, F-Apteka саўда есабатлары, бәсекилеслер анализи ямаса саўданы көтериў идеялары бойынша қәлеген сораўыңызды жазың ямаса даўыс пенен айтың.
+          </div>
+        </div>
+      </div>
+
+      <form class="chat-composer" id="chatForm">
+        <button type="button" class="composer-icon" id="btnVoice" title="Даўыс пенен жазыў">🎤</button>
+        <textarea id="chatInput" rows="1" placeholder="Jarvis-қа жазың..."></textarea>
+        <button type="submit" class="composer-send" id="btnSend" title="Жибериў">➤</button>
+      </form>
+    </section>
+
+    <!-- ==================== 2. САЎДА (F-APTEKA) ==================== -->
+    <section class="tab-view" id="tab-sales">
+      <div class="card sync-banner">
+        <div class="sync-banner-top">
+          <div>
+            <div class="card-title">🔄 F-Apteka интеграциясы</div>
+            <div class="card-sub" id="fAptekaStatusText">Тайын — API мәнзили киритилсе автомат жалғанады</div>
+          </div>
+          <button type="button" class="btn-primary sm" id="btnPullFApteka">Синхронлаў</button>
+        </div>
+        <div class="upload-actions">
+          <label class="action-tile">
+            <input type="file" id="fAptekaImageInput" accept="image/*" capture="environment" hidden />
+            <span>📷</span>
+            <strong>Сүўрет / Скриншот</strong>
+            <small>F-Apteka экранын AI оқыйды</small>
+          </label>
+          <label class="action-tile">
+            <input type="file" id="fAptekaFileInput" accept=".csv,.txt,.tsv,.json" hidden />
+            <span>📄</span>
+            <strong>CSV / JSON файл</strong>
+            <small>F-Apteka экспортын жүклеў</small>
+          </label>
+          <button type="button" class="action-tile" id="btnToggleManualSales">
+            <span>✍️</span>
+            <strong>Қолда киритиў</strong>
+            <small>Күнлик саўданы тез жазыў</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- Қолда саўда киритиў формасы -->
+      <div class="card hidden" id="manualSalesCard">
+        <div class="card-title">✍️ Күнлик саўда киритиў</div>
+        <div class="form-grid">
+          <label>Филиал
+            <select id="manualBranch">
+              <option value="1-Филиал">1-Филиал (Шымбай 5-этаж)</option>
+              <option value="2-Филиал">2-Филиал (Шымбай Базар)</option>
+              <option value="3-Филиал">3-Филиал (Хожели)</option>
+              <option value="4-Филиал">4-Филиал (Нөкис)</option>
+            </select>
+          </label>
+          <label>Саўда суммасы (сум)
+            <input type="number" id="manualRevenue" placeholder="Мысалы: 18500000" />
+          </label>
+          <label>Чеклер саны
+            <input type="number" id="manualChecks" placeholder="Мысалы: 145" />
+          </label>
+          <label>Фармацевт аты (қәлеўиңизше)
+            <input type="text" id="manualPharmacist" placeholder="Мысалы: Айгүл" />
+          </label>
+        </div>
+        <div class="row-actions">
+          <button type="button" class="btn-primary" id="btnSaveManualSales">Сақлаў</button>
+          <button type="button" class="btn-ghost" id="btnCancelManualSales">Бийкарлаў</button>
+        </div>
+      </div>
+
+      <!-- KPI көрсеткишлери -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Жәми саўда</div>
+          <div class="kpi-value" id="kpiTotalRevenue">0 сум</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Чеклер саны</div>
+          <div class="kpi-value" id="kpiTotalChecks">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Орташа чек</div>
+          <div class="kpi-value" id="kpiAvgCheck">0 сум</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Қайтарыўлар</div>
+          <div class="kpi-value" id="kpiReturns">0 сум</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head-row">
+          <div class="card-title">🏥 Филиаллар бойынша саўда</div>
+          <button type="button" class="btn-ghost sm" id="btnAnalyzeSalesAI">🤖 AI таллаў</button>
+        </div>
+        <div id="salesBranchesList" class="list-stack">
+          <div class="empty-state">Бүгин ушын F-Apteka саўда есабаты еле киритилмеген. Скриншот жүклең ямаса синхронлаң.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏆 Сатыўшы қызлар рейтинги</div>
+        <div id="salesPharmacistsList" class="list-stack">
+          <div class="empty-state">Фармацевтлер бойынша мағлыўмат F-Apteka есабатынан түседи.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. ҚЫЗЛАР (ТАБЕЛЬ) ==================== -->
+    <section class="tab-view" id="tab-staff">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Жәми қызлар</div>
+          <div class="kpi-value" id="attTotal">0</div>
+        </div>
+        <div class="kpi-card accent-green">
+          <div class="kpi-label">Жумыста</div>
+          <div class="kpi-value" id="attPresent">0</div>
+        </div>
+        <div class="kpi-card accent-amber">
+          <div class="kpi-label">Кешиккен</div>
+          <div class="kpi-value" id="attLate">0</div>
+        </div>
+        <div class="kpi-card accent-red">
+          <div class="kpi-label">Штрафлар</div>
+          <div class="kpi-value" id="attFine">0 сум</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head-row">
+          <div class="card-title">👩‍⚕️ 4 филиал келип-кетиў табели</div>
+          <button type="button" class="btn-primary sm" id="btnAnalyzeStaffAI">🤖 AI есабат</button>
+        </div>
+        <div id="staffBranchesList" class="list-stack">
+          <div class="empty-state">Табель жүкленип атыр...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 4. БӘСЕКИЛЕСЛЕР ҲӘМ ИДЕЯЛАР ==================== -->
+    <section class="tab-view" id="tab-ideas">
+      <div class="card">
+        <div class="card-title">🚀 Саўданы көтериў идеялары</div>
+        <div class="card-sub">Шымбай, Хожели ҳәм Нөкис филиаллары ушын AI тәрепинен таярланатуғын әмелий усыныслар</div>
+        <div class="row-actions wrap">
+          <button type="button" class="btn-primary sm" id="btnGenIdeasPromo">🎁 Акция идеялары</button>
+          <button type="button" class="btn-secondary sm" id="btnGenIdeasUpsell">💬 Қызларға сатыў скрипти</button>
+          <button type="button" class="btn-secondary sm" id="btnGenCompetitorStrategy">🎯 Бәсекилес анализи</button>
+        </div>
+        <div id="ideasOutput" class="ai-output hidden"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head-row">
+          <div class="card-title">🏪 Бәсекилес (конкурент) аптекалар</div>
+          <button type="button" class="btn-ghost sm" id="btnToggleCompForm">+ Қосыў</button>
+        </div>
+
+        <form class="comp-form hidden" id="compForm">
+          <div class="form-grid">
+            <label>Аптека аты
+              <input type="text" id="compName" placeholder="Мысалы: Аптека №5" required />
+            </label>
+            <label>Қайсы филиал қасында
+              <select id="compBranch">
+                <option value="1-Филиал (Шымбай 5-этаж)">1-Филиал (Шымбай 5-этаж)</option>
+                <option value="2-Филиал (Шымбай Базар)">2-Филиал (Шымбай Базар)</option>
+                <option value="3-Филиал (Хожели)">3-Филиал (Хожели)</option>
+                <option value="4-Филиал (Нөкис)">4-Филиал (Нөкис)</option>
+              </select>
+            </label>
+            <label>Баҳа дәрежеси
+              <select id="compPrice">
+                <option value="Арзан">Арзан</option>
+                <option value="Орташа" selected>Орташа</option>
+                <option value="Қымбат">Қымбат</option>
+              </select>
+            </label>
+            <label>Акция / Өзгешелиги
+              <input type="text" id="compPromos" placeholder="Мысалы: 24/7 ислейди, 5% скидка" />
+            </label>
+            <label>Күшли тәрепи
+              <input type="text" id="compStrengths" placeholder="Мысалы: ассортимент кең" />
+            </label>
+            <label>Әззи тәрепи
+              <input type="text" id="compWeaknesses" placeholder="Мысалы: гезек көп, хызмет әсте" />
+            </label>
+          </div>
+          <div class="row-actions">
+            <button type="submit" class="btn-primary sm">Сақлаў</button>
+            <button type="button" class="btn-ghost sm" id="btnCancelComp">Бийкарлаў</button>
+          </div>
+        </form>
+
+        <div id="competitorsList" class="list-stack">
+          <div class="empty-state">Әтираптағы бәсекилес аптекаларды қосың — Jarvis оларды таллап береди.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 5. САЗЛАЎ ==================== -->
+    <section class="tab-view" id="tab-settings">
+      <!-- Телефонға орнатыў -->
+      <div class="card">
+        <div class="card-title">📱 Телефонға орнатыў (PWA)</div>
+        <div class="card-sub">Jarvis-ты телефон экранына жеке программа сыпатында орнатып алың.</div>
+        <div class="row-actions">
+          <button type="button" class="btn-primary" id="btnInstallPwa">📱 Телефонға орнатыў</button>
+        </div>
+        <div class="hint-text" id="pwaInstallHint">Android Chrome: Меню → «Экранға қосыў». iPhone Safari: Бөлисиў (⬆️) → «На экран Домой».</div>
+      </div>
+
+      <!-- AI Моделлери -->
+      <div class="card">
+        <div class="card-title">🧠 AI моделлери (API гилтлер)</div>
+        <div class="card-sub">Gemini сервердеги `.env` гилти арқалы дәрҳал ислейди. ChatGPT, Claude ямаса OpenRouter гилтлерин де қосыўыңызға болады (тек усы телефонда сақланады).</div>
+        <div class="status-pills" id="aiStatusPills"></div>
+        <div class="form-grid">
+          <label>Gemini API гилти (қосымша)
+            <input type="password" id="keyGemini" placeholder="Сервердеги .env арқалы актив" autocomplete="off" />
+          </label>
+          <label>ChatGPT (OpenAI) API гилти
+            <input type="password" id="keyOpenAI" placeholder="sk-..." autocomplete="off" />
+          </label>
+          <label>Claude (Anthropic) API гилти
+            <input type="password" id="keyClaude" placeholder="sk-ant-..." autocomplete="off" />
+          </label>
+          <label>OpenRouter API гилти (1 гилт — бәри)
+            <input type="password" id="keyOpenRouter" placeholder="sk-or-..." autocomplete="off" />
+          </label>
+        </div>
+        <div class="row-actions">
+          <button type="button" class="btn-primary sm" id="btnSaveAiKeys">Гилтлерди сақлаў</button>
+        </div>
+      </div>
+
+      <!-- F-Apteka интеграциясы сазлаўы -->
+      <div class="card">
+        <div class="card-title">🔌 F-Apteka интеграция шлюзи (тайын)</div>
+        <div class="card-sub">FOM Group / F-Apteka тәрепинен API URL ҳәм Token берилгенде тек төменге киритип «Сақлаў» басыў жетерли.</div>
+        <div class="form-grid">
+          <label>F-Apteka API URL (Pull синхронлаў ушын)
+            <input type="url" id="fAptekaUrlInput" placeholder="https://.../f-apteka/api/daily-sales" />
+          </label>
+          <label>F-Apteka API Token
+            <input type="password" id="fAptekaTokenInput" placeholder="Bearer / API Token" autocomplete="off" />
+          </label>
+          <label>Jarvis Webhook мәнзили (F-Apteka REPORT.exe ушын)
+            <input type="text" id="fAptekaWebhookUrl" readonly />
+          </label>
+        </div>
+        <div class="row-actions wrap">
+          <button type="button" class="btn-primary sm" id="btnSaveFApteka">Сақлаў</button>
+          <button type="button" class="btn-secondary sm" id="btnCopyWebhook">📋 Webhook көшириў</button>
+          <button type="button" class="btn-ghost sm" id="btnTestFApteka">🧪 Тест синхронлаў</button>
+        </div>
+      </div>
+
+      <!-- PIN Қулп -->
+      <div class="card">
+        <div class="card-title">🔐 Жеке PIN-код қулпы</div>
+        <div class="card-sub">Қосымшаны тек өзиңиз ашыў ушын 4 санлы код орнатыўыңызға болады.</div>
+        <div class="row-actions">
+          <input type="password" inputmode="numeric" maxlength="4" id="pinSetupInput" placeholder="4 сан (бос — өшириў)" class="inline-input" />
+          <button type="button" class="btn-secondary sm" id="btnSavePin">Орнатыў</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Төменги мобиль навигация -->
+  <nav class="bottom-nav">
+    <button type="button" class="nav-item active" data-tab="chat">
+      <span class="nav-ico">🤖</span>
+      <span>Jarvis</span>
+    </button>
+    <button type="button" class="nav-item" data-tab="sales">
+      <span class="nav-ico">📊</span>
+      <span>Саўда</span>
+    </button>
+    <button type="button" class="nav-item" data-tab="staff">
+      <span class="nav-ico">👩‍⚕️</span>
+      <span>Қызлар</span>
+    </button>
+    <button type="button" class="nav-item" data-tab="ideas">
+      <span class="nav-ico">💡</span>
+      <span>Идеялар</span>
+    </button>
+    <button type="button" class="nav-item" data-tab="settings">
+      <span class="nav-ico">⚙️</span>
+      <span>Сазлаў</span>
+    </button>
+  </nav>
+
+  <!-- Toast хабарнама -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="jarvis.js"></script>
+</body>
+</html>
