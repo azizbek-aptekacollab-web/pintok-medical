@@ -1,4 +1,4 @@
-// PINTOK APTEKA — Jarvis AI Mobile PWA Client
+// PINTOK APTEKA — J.A.R.V.I.S. AI CORE v4.2 HUD Client
 (() => {
   'use strict';
 
@@ -10,6 +10,13 @@
     pin: 'jarvis_pin_v1'
   };
 
+  const DEFAULT_BRANCHES = [
+    { id: 'branch_1', code: 'FILIAL #01 // SHIMBAY 5-ETAJ', name: '1-Филиал' },
+    { id: 'branch_2', code: 'FILIAL #02 // SHIMBAY BAZAR', name: '2-Филиал' },
+    { id: 'branch_3', code: 'FILIAL #03 // XOJELI', name: '3-Филиал' },
+    { id: 'branch_4', code: 'FILIAL #04 // NOKIS', name: '4-Филиал' }
+  ];
+
   const state = {
     date: getTodayTashkent(),
     provider: 'gemini',
@@ -17,7 +24,6 @@
     messages: [],
     attendance: null,
     salesToday: null,
-    salesHistory: [],
     competitors: [],
     fAptekaConfig: {},
     deferredInstallPrompt: null,
@@ -28,14 +34,18 @@
     const now = new Date();
     const utc = now.getTime() + now.getTimezoneOffset() * 60000;
     const tash = new Date(utc + 5 * 3600000);
-    const y = tash.getFullYear();
-    const m = String(tash.getMonth() + 1).padStart(2, '0');
-    const d = String(tash.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+    return `${tash.getFullYear()}-${String(tash.getMonth() + 1).padStart(2, '0')}-${String(tash.getDate()).padStart(2, '0')}`;
   }
 
   function formatSum(n) {
     return `${Math.round(Number(n || 0)).toLocaleString('ru-RU').replace(/\u00A0/g, ' ')} сум`;
+  }
+
+  function formatShortUZS(n) {
+    const num = Number(n || 0);
+    if (num >= 1000000) return `${(num / 1000000).toFixed(2).replace(/\.00$/, '')}M UZS`;
+    if (num > 0) return `${Math.round(num).toLocaleString('ru-RU').replace(/\u00A0/g, ',')} UZS`;
+    return '0 UZS';
   }
 
   function escapeHtml(str) {
@@ -76,15 +86,11 @@
     try {
       const raw = localStorage.getItem(key);
       return raw ? JSON.parse(raw) : fallback;
-    } catch (_) {
-      return fallback;
-    }
+    } catch (_) { return fallback; }
   }
 
   function saveJsonLS(key, val) {
-    try {
-      localStorage.setItem(key, JSON.stringify(val));
-    } catch (_) {}
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch (_) {}
   }
 
   let toastTimer = null;
@@ -105,14 +111,95 @@
     return loadJsonLS(LS_KEYS.fApteka, { apiUrl: '', apiToken: '' });
   }
 
-  // ==================== NAVIGATION ====================
   function switchTab(tabName) {
     document.querySelectorAll('.tab-view').forEach((sec) => {
       sec.classList.toggle('active', sec.id === `tab-${tabName}`);
     });
-    document.querySelectorAll('.nav-item').forEach((btn) => {
+    document.querySelectorAll('.hud-tab').forEach((btn) => {
       btn.classList.toggle('active', btn.dataset.tab === tabName);
     });
+  }
+
+  // ==================== ECG WAVEFORM & LED BAR ====================
+  function initTelemetryAnimations() {
+    const ledBar = document.getElementById('ledBar');
+    if (ledBar) {
+      const count = 56;
+      ledBar.innerHTML = Array.from({ length: count }, (_, i) =>
+        `<span class="led-dot ${i % 2 === 0 ? '' : 'mint'}"></span>`
+      ).join('');
+      const dots = Array.from(ledBar.children);
+      setInterval(() => {
+        const active = state.isSending;
+        dots.forEach((d, idx) => {
+          const wave = Math.sin(Date.now() / (active ? 90 : 280) + idx * 0.45);
+          d.style.opacity = active ? String(0.45 + 0.55 * Math.abs(wave)) : String(0.25 + 0.45 * Math.abs(wave));
+          d.style.height = active ? `${4 + Math.round(8 * Math.abs(wave))}px` : `${4 + Math.round(3 * Math.abs(wave))}px`;
+        });
+      }, 95);
+    }
+
+    const canvas = document.getElementById('ecgCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let phase = 0;
+
+    function drawECG() {
+      const w = canvas.clientWidth || 420;
+      const h = canvas.height || 54;
+      if (canvas.width !== w) canvas.width = w;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.beginPath();
+      const mid = h * 0.55;
+      for (let x = 0; x < w; x++) {
+        const t = (x + phase) % 130;
+        let y = mid;
+        if (t > 40 && t < 48) y = mid - 5;
+        else if (t >= 48 && t < 53) y = mid + 8;
+        else if (t >= 53 && t < 59) y = mid - 22;
+        else if (t >= 59 && t < 65) y = mid + 13;
+        else if (t >= 65 && t < 74) y = mid - 4;
+        else y = mid + Math.sin((x + phase) * 0.08) * 1.3;
+
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+
+      const grad = ctx.createLinearGradient(0, 0, w, 0);
+      grad.addColorStop(0, '#00e5ff');
+      grad.addColorStop(0.5, '#00ffa3');
+      grad.addColorStop(1, '#00e5ff');
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#00ffa3';
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+
+      phase += state.isSending ? 3.2 : 1.6;
+      requestAnimationFrame(drawECG);
+    }
+    requestAnimationFrame(drawECG);
+  }
+
+  function setJarvisState(mode) {
+    const badge = document.getElementById('jarvisStateBadge');
+    const stage = document.querySelector('.holo-stage');
+    if (badge) {
+      badge.textContent = mode === 'thinking' ? 'STATE: PROCESSING...' : 'STATE: IDLE';
+    }
+    if (stage) {
+      stage.classList.toggle('thinking', mode === 'thinking');
+    }
+  }
+
+  function setDonut(ringId, valId, pct) {
+    const safePct = Math.max(0, Math.min(100, Math.round(pct)));
+    const ring = document.getElementById(ringId);
+    const val = document.getElementById(valId);
+    const circ = 201;
+    if (ring) ring.style.strokeDashoffset = String(circ - (circ * safePct) / 100);
+    if (val) val.textContent = `${safePct}%`;
   }
 
   // ==================== DATA LOADING ====================
@@ -135,10 +222,8 @@
         state.attendance = data.attendance || null;
         state.fAptekaConfig = data.fAptekaConfig || {};
 
-        // Merge server sales with localStorage cache (in case Vercel FS is read-only)
         const localSalesMap = loadJsonLS(LS_KEYS.salesCache, {});
         state.salesToday = data.salesToday || localSalesMap[state.date] || null;
-        state.salesHistory = data.salesHistory || [];
 
         const localComps = loadJsonLS(LS_KEYS.competitors, []);
         state.competitors =
@@ -146,13 +231,13 @@
             ? data.competitors
             : localComps;
       }
-    } catch (err) {
-      // Offline / localStorage fallback
+    } catch (_) {
       const localSalesMap = loadJsonLS(LS_KEYS.salesCache, {});
       state.salesToday = localSalesMap[state.date] || null;
       state.competitors = loadJsonLS(LS_KEYS.competitors, []);
     }
 
+    renderCentralHUD();
     renderStaff();
     renderSales();
     renderCompetitors();
@@ -173,17 +258,134 @@
       if (dot) dot.classList.toggle('on', Boolean(state.configuredProviders[p]));
     }
     renderSettingsStatus();
+    renderCentralHUD();
+  }
+
+  // ==================== RENDER CENTRAL HUD ====================
+  function renderCentralHUD() {
+    const att = state.attendance;
+    const sum = (att && att.summary) || { totalStaff: 0, present: 0, late: 0, absent: 0, totalFine: 0 };
+    const st = state.salesToday;
+
+    // Total Revenue
+    const totalRevEl = document.getElementById('hudTotalRevenue');
+    if (totalRevEl) {
+      totalRevEl.textContent = st && st.totalRevenue
+        ? `${Math.round(st.totalRevenue).toLocaleString('ru-RU').replace(/\u00A0/g, ',')} UZS`
+        : 'F-APTEKA КҮТИЛМЕКТЕ';
+    }
+
+    // Branch HUD Cards
+    const branchList = document.getElementById('hudBranchList');
+    if (branchList) {
+      const attBranches = (att && att.branches) || [];
+      const salesBranches = (st && st.branches) || [];
+      const maxRev = Math.max(1, ...salesBranches.map((b) => Number(b.revenue || 0)));
+
+      branchList.innerHTML = DEFAULT_BRANCHES.map((def, idx) => {
+        const abr = attBranches[idx] || { totalStaff: 0, present: 0, late: 0 };
+        const sbr = salesBranches.find((b) => String(b.name || '').includes(`${idx + 1}`)) || salesBranches[idx] || null;
+
+        const revText = sbr ? formatShortUZS(sbr.revenue) : `${abr.present}/${abr.totalStaff} ҚЫЗ`;
+        const staffPct = abr.totalStaff > 0 ? Math.round((abr.present / abr.totalStaff) * 100) : 0;
+        const barPct = sbr ? Math.max(12, Math.round((Number(sbr.revenue || 0) / maxRev) * 100)) : staffPct;
+        const hasIssue = abr.late > 0 || (sbr && sbr.returns > 0);
+
+        return `<div class="branch-hud-card">
+          <div class="branch-top-row">
+            <div class="branch-code">${def.code}</div>
+            <div class="branch-rev">${revText}</div>
+          </div>
+          <div class="neon-bar-track">
+            <div class="neon-bar-fill ${hasIssue ? 'amber' : ''}" style="width: ${barPct}%"></div>
+          </div>
+          <div class="branch-meta-row">
+            <span class="${hasIssue ? 'status-warn' : 'status-online'}">
+              ${abr.late > 0 ? `ATTENDANCE: ${abr.late} КЕШИКТИ` : 'BOT-CONTROL: ONLINE'}
+            </span>
+            <span>ТАБЕЛЬ: ${staffPct}% (${abr.present}/${abr.totalStaff})</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    // Bottom 3 metric tiles in left panel
+    document.getElementById('hudMetric1Val').textContent = `${sum.present}/${sum.totalStaff}`;
+    document.getElementById('hudMetric2Val').textContent = String(sum.late);
+    document.getElementById('hudMetric3Val').textContent = st && st.avgCheck
+      ? `${Math.round(st.avgCheck / 1000)}K UZS`
+      : `${st ? st.totalChecks : 0} ЧЕК`;
+
+    // Donut Gauges
+    const activeAiCount = Object.values(state.configuredProviders).filter(Boolean).length;
+    setDonut('gaugeAiRing', 'gaugeAiVal', Math.min(100, 35 + activeAiCount * 20));
+    const staffPctTotal = sum.totalStaff > 0 ? Math.round((sum.present / sum.totalStaff) * 100) : 94;
+    setDonut('gaugeStaffRing', 'gaugeStaffVal', staffPctTotal);
+    setDonut('gaugeSpeedRing', 'gaugeSpeedVal', state.salesToday ? 98 : 92);
+
+    // Smart Pharma Alerts
+    const alertsEl = document.getElementById('smartAlertsList');
+    if (alertsEl) {
+      const alerts = [];
+      if (sum.late > 0) {
+        alerts.push({
+          tone: 'amber',
+          title: `▲ КЕШИГИЎ ЕСКЕРТИЎИ (${sum.late})`,
+          time: 'LIVE',
+          text: `${sum.late} хызметкер бүгин кешигип келди. Жәми штраф: ${formatSum(sum.totalFine)}.`
+        });
+      } else {
+        alerts.push({
+          tone: 'green',
+          title: '✓ ҚЫЗЛАР ТАБЕЛИ ТӘРТИПТЕ',
+          time: 'LIVE',
+          text: `${sum.present}/${sum.totalStaff} фармацевт ўақтында жумыста. Кешигиў: 0.`
+        });
+      }
+
+      if (st && st.totalRevenue > 0) {
+        alerts.push({
+          tone: 'cyan',
+          title: '⚡ F-APTEKA ЕСАБАТЫ ТҮСТИ',
+          time: st.source || 'SYNC',
+          text: `Жәми саўда: ${formatSum(st.totalRevenue)} (${st.totalChecks} чек, орташа: ${formatSum(st.avgCheck)}).`
+        });
+      } else {
+        alerts.push({
+          tone: 'cyan',
+          title: '⚡ F-APTEKA ШЛЮЗИ ТАЙЫН',
+          time: 'READY',
+          text: 'F-Apteka API жалғанғанша «F-APTEKA САЎДА» бөлиминен скриншот ямаса CSV жүклей аласыз.'
+        });
+      }
+
+      alerts.push({
+        tone: state.competitors.length ? 'green' : 'amber',
+        title: state.competitors.length ? '✓ БӘСЕКИЛЕСЛЕР БАЗАСЫ АКТИВ' : '▲ БӘСЕКИЛЕС МАҒЛЫЎМАТЫ',
+        time: `${state.competitors.length} АПТЕКА`,
+        text: state.competitors.length
+          ? `${state.competitors.length} бәсекилес аптека анализге тайын. «БӘСЕКИЛЕС & ИДЕЯ» бөлиминде.`
+          : 'Әтираптағы бәсекилес аптекаларды киритиң — Jarvis стратегия дүзеди.'
+      });
+
+      alertsEl.innerHTML = alerts
+        .map(
+          (a) => `<div class="alert-card ${a.tone}">
+            <div class="alert-top">
+              <span>${escapeHtml(a.title)}</span>
+              <span class="alert-time">${escapeHtml(a.time)}</span>
+            </div>
+            <div class="alert-text">${escapeHtml(a.text)}</div>
+          </div>`
+        )
+        .join('');
+    }
   }
 
   function renderSettingsStatus() {
     const pillsEl = document.getElementById('aiStatusPills');
     if (pillsEl) {
-      const labels = {
-        gemini: 'Gemini',
-        openai: 'ChatGPT',
-        claude: 'Claude',
-        openrouter: 'OpenRouter'
-      };
+      const labels = { gemini: 'Gemini', openai: 'ChatGPT', claude: 'Claude', openrouter: 'OpenRouter' };
       pillsEl.innerHTML = Object.entries(labels)
         .map(([k, label]) => {
           const on = state.configuredProviders[k];
@@ -193,9 +395,7 @@
     }
 
     const webhookInput = document.getElementById('fAptekaWebhookUrl');
-    if (webhookInput) {
-      webhookInput.value = `${window.location.origin}/api/f-apteka-sync`;
-    }
+    if (webhookInput) webhookInput.value = `${window.location.origin}/api/f-apteka-sync`;
 
     const statusEl = document.getElementById('fAptekaStatusText');
     if (statusEl) {
@@ -212,14 +412,14 @@
     }
   }
 
-  // ==================== LIVE CONTEXT FOR AI ====================
+  // ==================== SYSTEM CONTEXT & AI CHAT ====================
   function buildSystemContext() {
     const parts = [`Сәне: ${state.date}`];
 
     if (state.attendance && state.attendance.summary) {
       const s = state.attendance.summary;
       parts.push(
-        `ТАБЕЛЬ (ҚЫЗЛАР КЕЛИП-КЕТИЎИ): Жәми ${s.totalStaff} хызметкер, жумыста: ${s.present}, кешиккен: ${s.late}, келмеген: ${s.absent}, жәми штраф: ${formatSum(s.totalFine)}.`
+        `ТАБЕЛЬ: Жәми ${s.totalStaff} хызметкер, жумыста: ${s.present}, кешиккен: ${s.late}, келмеген: ${s.absent}, жәми штраф: ${formatSum(s.totalFine)}.`
       );
       for (const br of state.attendance.branches || []) {
         const emps = (br.employees || [])
@@ -242,40 +442,29 @@
     if (state.salesToday) {
       const st = state.salesToday;
       parts.push(
-        `F-APTEKA САЎДА ЕСАБАТЫ (${st.date}): Жәми саўда ${formatSum(st.totalRevenue)}, чеклер: ${st.totalChecks}, орташа чек: ${formatSum(st.avgCheck)}, қайтарыўлар: ${formatSum(st.totalReturns)}.`
+        `F-APTEKA САЎДА (${st.date}): Жәми ${formatSum(st.totalRevenue)}, чеклер: ${st.totalChecks}, орташа чек: ${formatSum(st.avgCheck)}, қайтарыўлар: ${formatSum(st.totalReturns)}.`
       );
       if (st.branches && st.branches.length) {
-        parts.push(
-          'Филиаллар: ' +
-            st.branches.map((b) => `${b.name}: ${formatSum(b.revenue)} (${b.checks} чек)`).join(' | ')
-        );
+        parts.push('Филиаллар: ' + st.branches.map((b) => `${b.name}: ${formatSum(b.revenue)} (${b.checks} чек)`).join(' | '));
       }
       if (st.pharmacists && st.pharmacists.length) {
-        parts.push(
-          'Фармацевтлер: ' +
-            st.pharmacists.map((p) => `${p.name} (${p.branch || '-'}): ${formatSum(p.revenue)} (${p.checks} чек)`).join(' | ')
-        );
+        parts.push('Фармацевтлер: ' + st.pharmacists.map((p) => `${p.name} (${p.branch || '-'}): ${formatSum(p.revenue)}`).join(' | '));
       }
     } else {
-      parts.push('F-APTEKA САЎДА ЕСАБАТЫ: Бүгин ушын еле жүкленбеген.');
+      parts.push('F-APTEKA САЎДА: Бүгин ушын еле жүкленбеген.');
     }
 
     if (state.competitors && state.competitors.length) {
       parts.push(
-        'БӘСЕКИЛЕС АПТЕКАЛАР: ' +
+        'БӘСЕКИЛЕСЛЕР: ' +
           state.competitors
-            .map(
-              (c) =>
-                `${c.name} (${c.branchArea}, баҳа: ${c.priceLevel}, күшли: ${c.strengths || '-'}, әззи: ${c.weaknesses || '-'}, акция: ${c.promos || '-'})`
-            )
+            .map((c) => `${c.name} (${c.branchArea}, баҳа: ${c.priceLevel}, күшли: ${c.strengths || '-'}, әззи: ${c.weaknesses || '-'})`)
             .join(' ; ')
       );
     }
-
     return parts.join('\n');
   }
 
-  // ==================== AI CHAT ====================
   function appendMessage(role, meta, text) {
     const feed = document.getElementById('chatFeed');
     const div = document.createElement('div');
@@ -322,23 +511,25 @@
     if (!clean || state.isSending) return;
 
     state.isSending = true;
+    setJarvisState('thinking');
     const sendBtn = document.getElementById('btnSend');
     if (sendBtn) sendBtn.disabled = true;
 
-    appendMessage('user', 'Сиз', clean);
+    appendMessage('user', 'COMMANDER', clean);
     state.messages.push({ role: 'user', content: clean });
 
-    const label = state.provider === 'council' ? 'JARVIS · 3-AI Кеңес' : `JARVIS · ${state.provider.toUpperCase()}`;
-    const typingEl = appendMessage('assistant', label, 'Ойланып атырман...');
+    const label = state.provider === 'council' ? 'J.A.R.V.I.S. // 3-AI КЕҢЕС' : `J.A.R.V.I.S. // ${state.provider.toUpperCase()}`;
+    const typingEl = appendMessage('assistant', label, 'Таллап атырман...');
 
     try {
       const data = await callJarvisAI({ prompt: clean });
       typingEl.querySelector('.msg-body').innerHTML = renderMarkdownLite(data.reply);
       state.messages.push({ role: 'assistant', content: data.reply });
     } catch (err) {
-      typingEl.querySelector('.msg-body').innerHTML = `<p style="color:#f87171;">⚠️ ${escapeHtml(err.message)}</p>`;
+      typingEl.querySelector('.msg-body').innerHTML = `<p style="color:#ff4d6d;">⚠️ ${escapeHtml(err.message)}</p>`;
     } finally {
       state.isSending = false;
+      setJarvisState('idle');
       if (sendBtn) sendBtn.disabled = false;
       const feed = document.getElementById('chatFeed');
       if (feed) feed.scrollTop = feed.scrollHeight;
@@ -361,15 +552,12 @@
     let listening = false;
 
     btn.addEventListener('click', () => {
-      if (listening) {
-        rec.stop();
-        return;
-      }
+      if (listening) { rec.stop(); return; }
       try {
         rec.start();
         listening = true;
         btn.classList.add('listening');
-        showToast('Тыңлап атырман, сөйлең...');
+        showToast('🎤 Тыңлап атырман, сөйлең...');
       } catch (_) {}
     });
 
@@ -381,17 +569,11 @@
         input.focus();
       }
     };
-    rec.onend = () => {
-      listening = false;
-      btn.classList.remove('listening');
-    };
-    rec.onerror = () => {
-      listening = false;
-      btn.classList.remove('listening');
-    };
+    rec.onend = () => { listening = false; btn.classList.remove('listening'); };
+    rec.onerror = () => { listening = false; btn.classList.remove('listening'); };
   }
 
-  // ==================== RENDER STAFF ====================
+  // ==================== RENDER STAFF & SALES & COMPETITORS ====================
   function renderStaff() {
     const att = state.attendance;
     const sum = (att && att.summary) || { totalStaff: 0, present: 0, late: 0, absent: 0, totalFine: 0 };
@@ -413,22 +595,11 @@
           br.employees && br.employees.length
             ? br.employees
                 .map((e) => {
-                  const pillClass =
-                    e.status === 'present'
-                      ? 'green'
-                      : e.status === 'late'
-                      ? 'amber'
-                      : e.status === 'sick'
-                      ? 'blue'
-                      : 'red';
+                  const pillClass = e.status === 'present' ? 'green' : e.status === 'late' ? 'amber' : e.status === 'sick' ? 'blue' : 'red';
                   const pillText =
-                    e.status === 'present'
-                      ? `✅ ${e.checkInTime || 'Келди'}`
-                      : e.status === 'late'
-                      ? `⏰ +${e.lateMinutes} мин`
-                      : e.status === 'sick'
-                      ? '🏥 Больничный'
-                      : '❌ Келмеди';
+                    e.status === 'present' ? `✅ ${e.checkInTime || 'Келди'}` :
+                    e.status === 'late' ? `⏰ +${e.lateMinutes} мин` :
+                    e.status === 'sick' ? '🏥 Больничный' : '❌ Келмеди';
                   return `<div class="emp-row">
                     <div>
                       <strong>${escapeHtml(e.name)}</strong>
@@ -454,7 +625,6 @@
       .join('');
   }
 
-  // ==================== RENDER SALES (F-APTEKA) ====================
   function renderSales() {
     const st = state.salesToday;
     document.getElementById('kpiTotalRevenue').textContent = formatSum(st ? st.totalRevenue : 0);
@@ -467,17 +637,16 @@
       brList.innerHTML = st.branches
         .map(
           (b) => `<div class="list-item">
-          <div class="list-item-row">
-            <div class="item-title">${escapeHtml(b.name)}</div>
-            <span class="pill green">${formatSum(b.revenue)}</span>
-          </div>
-          <div class="item-sub">Чеклер: ${b.checks} · Орташа чек: ${formatSum(b.avgCheck)}${b.returns ? ` · Қайтарыў: ${formatSum(b.returns)}` : ''}</div>
-        </div>`
+            <div class="list-item-row">
+              <div class="item-title">${escapeHtml(b.name)}</div>
+              <span class="pill green">${formatSum(b.revenue)}</span>
+            </div>
+            <div class="item-sub">Чеклер: ${b.checks} · Орташа чек: ${formatSum(b.avgCheck)}${b.returns ? ` · Қайтарыў: ${formatSum(b.returns)}` : ''}</div>
+          </div>`
         )
         .join('');
     } else {
-      brList.innerHTML =
-        '<div class="empty-state">Бүгин ушын F-Apteka саўда есабаты еле киритилмеген. Скриншот жүклең, CSV ашың ямаса «Синхронлаў» басың.</div>';
+      brList.innerHTML = '<div class="empty-state">Бүгин ушын F-Apteka саўда есабаты еле киритилмеген.</div>';
     }
 
     const phList = document.getElementById('salesPharmacistsList');
@@ -485,18 +654,18 @@
       phList.innerHTML = st.pharmacists
         .map(
           (p, i) => `<div class="list-item">
-          <div class="list-item-row">
-            <div>
-              <div class="item-title">${i + 1}. ${escapeHtml(p.name)}</div>
-              <div class="item-sub">${escapeHtml(p.branch || 'Филиал көрсетилмеген')} · ${p.checks} чек</div>
+            <div class="list-item-row">
+              <div>
+                <div class="item-title">${i + 1}. ${escapeHtml(p.name)}</div>
+                <div class="item-sub">${escapeHtml(p.branch || 'Филиал көрсетилмеген')} · ${p.checks} чек</div>
+              </div>
+              <span class="pill blue">${formatSum(p.revenue)}</span>
             </div>
-            <span class="pill blue">${formatSum(p.revenue)}</span>
-          </div>
-        </div>`
+          </div>`
         )
         .join('');
     } else {
-      phList.innerHTML = '<div class="empty-state">Фармацевтлер бойынша мағлыўмат F-Apteka есабатынан түседи.</div>';
+      phList.innerHTML = '<div class="empty-state">Фармацевтлер рейтинги F-Apteka есабатынан түседи.</div>';
     }
   }
 
@@ -509,20 +678,17 @@
         body: JSON.stringify({ type: 'sales', date: state.date, payload: full })
       });
       const data = await res.json();
-      if (data && data.ok && data.report) {
-        state.salesToday = data.report;
-      }
-    } catch (_) {
-      state.salesToday = full;
-    }
+      if (data && data.ok && data.report) state.salesToday = data.report;
+    } catch (_) { state.salesToday = full; }
+
     const cache = loadJsonLS(LS_KEYS.salesCache, {});
     cache[state.date] = state.salesToday;
     saveJsonLS(LS_KEYS.salesCache, cache);
     renderSales();
+    renderCentralHUD();
     renderSettingsStatus();
   }
 
-  // Pull from F-Apteka API
   async function pullFromFApteka() {
     const cfg = getFAptekaLocalCfg();
     showToast('F-Apteka сервери менен байланысып атыр...');
@@ -538,6 +704,7 @@
         cache[state.date] = data.report;
         saveJsonLS(LS_KEYS.salesCache, cache);
         renderSales();
+        renderCentralHUD();
         renderSettingsStatus();
         showToast('✅ F-Apteka саўда мағлыўматлары жаңаланды!');
       } else if (data.code === 'NOT_CONFIGURED') {
@@ -551,7 +718,6 @@
     }
   }
 
-  // Compress image before uploading to Gemini Vision
   function compressImageToBase64(file, maxDim = 1400, quality = 0.78) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -569,11 +735,9 @@
           const canvas = document.createElement('canvas');
           canvas.width = width;
           canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
           const dataUrl = canvas.toDataURL('image/jpeg', quality);
-          const base64 = dataUrl.split(',')[1] || '';
-          resolve({ base64, mimeType: 'image/jpeg' });
+          resolve({ base64: dataUrl.split(',')[1] || '', mimeType: 'image/jpeg' });
         };
         img.src = reader.result;
       };
@@ -587,14 +751,7 @@
     try {
       const { base64, mimeType } = await compressImageToBase64(file);
       const extractPrompt = `Бул F-Apteka программасының саўда есабаты сүўрети. Тек ғана таза JSON қайтар (markdown белгилерисиз):
-{
-  "totalRevenue": 0,
-  "totalChecks": 0,
-  "totalReturns": 0,
-  "branches": [{"name": "1-Филиал", "revenue": 0, "checks": 0, "returns": 0}],
-  "pharmacists": [{"name": "Аты", "branch": "1-Филиал", "revenue": 0, "checks": 0}]
-}
-Сүўреттеги барлық санларды анық оқып толтыр. Егер бир өрис көринбесе 0 ямаса бос массив қой.`;
+{"totalRevenue":0,"totalChecks":0,"totalReturns":0,"branches":[{"name":"1-Филиал","revenue":0,"checks":0,"returns":0}],"pharmacists":[{"name":"Аты","branch":"1-Филиал","revenue":0,"checks":0}]}`;
 
       const data = await callJarvisAI({
         prompt: extractPrompt,
@@ -619,20 +776,16 @@
     try {
       const text = await file.text();
       if (file.name.toLowerCase().endsWith('.json')) {
-        const json = JSON.parse(text);
-        await saveSalesData({ ...json, source: 'f-apteka-json' });
+        await saveSalesData({ ...JSON.parse(text), source: 'f-apteka-json' });
         showToast('✅ F-Apteka JSON файлы жүкленди!');
         return;
       }
-
-      // Simple CSV/TSV parser (supports ; , \t)
       const lines = text.split(/\r?\n/).filter((l) => l.trim());
       if (lines.length < 2) throw new Error('Файл бос ямаса қатарлар жетиспейди');
       const sep = lines[0].includes(';') ? ';' : lines[0].includes('\t') ? '\t' : ',';
       const headers = lines[0].split(sep).map((h) => h.trim().toLowerCase());
       const branches = [];
       const pharmacists = [];
-
       for (let i = 1; i < lines.length; i++) {
         const cols = lines[i].split(sep).map((c) => c.trim().replace(/^"|"$/g, ''));
         if (cols.length < 2) continue;
@@ -642,13 +795,9 @@
         const branch = row['филиал'] || row['аптека'] || row['branch'] || cols[0];
         const revenue = Number(String(row['выручка'] || row['сумма'] || row['revenue'] || row['итого'] || cols[1] || '0').replace(/[^\d.-]/g, '')) || 0;
         const checks = Number(String(row['чеки'] || row['checks'] || row['кол-во чеков'] || cols[2] || '0').replace(/[^\d.-]/g, '')) || 0;
-        if (name) {
-          pharmacists.push({ name, branch, revenue, checks });
-        } else if (branch && revenue > 0) {
-          branches.push({ name: branch, revenue, checks });
-        }
+        if (name) pharmacists.push({ name, branch, revenue, checks });
+        else if (branch && revenue > 0) branches.push({ name: branch, revenue, checks });
       }
-
       await saveSalesData({ branches, pharmacists, source: 'f-apteka-csv' });
       showToast('✅ F-Apteka CSV файлы жүкленди!');
     } catch (err) {
@@ -656,28 +805,26 @@
     }
   }
 
-  // ==================== COMPETITORS & IDEAS ====================
   function renderCompetitors() {
     const list = document.getElementById('competitorsList');
     if (!state.competitors || !state.competitors.length) {
-      list.innerHTML =
-        '<div class="empty-state">Әтираптағы бәсекилес аптекаларды қосың — Jarvis оларды таллап береди.</div>';
+      list.innerHTML = '<div class="empty-state">Әтираптағы бәсекилес аптекаларды қосың — Jarvis оларды таллап береди.</div>';
       return;
     }
     list.innerHTML = state.competitors
       .map(
         (c) => `<div class="list-item">
-        <div class="list-item-row">
-          <div>
-            <div class="item-title">${escapeHtml(c.name)}</div>
-            <div class="item-sub">${escapeHtml(c.branchArea)} · Баҳа: ${escapeHtml(c.priceLevel)}</div>
+          <div class="list-item-row">
+            <div>
+              <div class="item-title">${escapeHtml(c.name)}</div>
+              <div class="item-sub">${escapeHtml(c.branchArea)} · Баҳа: ${escapeHtml(c.priceLevel)}</div>
+            </div>
+            <button type="button" class="hud-btn sm" data-del-comp="${escapeHtml(c.id)}">🗑</button>
           </div>
-          <button type="button" class="btn-ghost sm" data-del-comp="${escapeHtml(c.id)}">🗑</button>
-        </div>
-        ${c.promos ? `<div class="item-sub">🎁 Акция: ${escapeHtml(c.promos)}</div>` : ''}
-        ${c.strengths ? `<div class="item-sub">💪 Күшли: ${escapeHtml(c.strengths)}</div>` : ''}
-        ${c.weaknesses ? `<div class="item-sub">⚡ Әззи: ${escapeHtml(c.weaknesses)}</div>` : ''}
-      </div>`
+          ${c.promos ? `<div class="item-sub">🎁 Акция: ${escapeHtml(c.promos)}</div>` : ''}
+          ${c.strengths ? `<div class="item-sub">💪 Күшли: ${escapeHtml(c.strengths)}</div>` : ''}
+          ${c.weaknesses ? `<div class="item-sub">⚡ Әззи: ${escapeHtml(c.weaknesses)}</div>` : ''}
+        </div>`
       )
       .join('');
 
@@ -694,16 +841,14 @@
         body: JSON.stringify({ type: 'competitor', ...item })
       });
       const data = await res.json();
-      if (data && data.ok && Array.isArray(data.competitors)) {
-        state.competitors = data.competitors;
-      } else {
-        state.competitors.unshift({ ...item, id: `comp_${Date.now()}` });
-      }
+      if (data && data.ok && Array.isArray(data.competitors)) state.competitors = data.competitors;
+      else state.competitors.unshift({ ...item, id: `comp_${Date.now()}` });
     } catch (_) {
       state.competitors.unshift({ ...item, id: `comp_${Date.now()}` });
     }
     saveJsonLS(LS_KEYS.competitors, state.competitors);
     renderCompetitors();
+    renderCentralHUD();
     showToast('✅ Бәсекилес сақланды');
   }
 
@@ -711,6 +856,7 @@
     state.competitors = state.competitors.filter((c) => c.id !== id);
     saveJsonLS(LS_KEYS.competitors, state.competitors);
     renderCompetitors();
+    renderCentralHUD();
     try {
       await fetch('/api/jarvis-data', {
         method: 'POST',
@@ -732,7 +878,6 @@
     }
   }
 
-  // ==================== PIN LOCK & PWA ====================
   function initPinLock() {
     const savedPin = localStorage.getItem(LS_KEYS.pin) || '';
     if (!savedPin) return;
@@ -742,57 +887,44 @@
     overlay.classList.remove('hidden');
 
     const tryUnlock = () => {
-      if (input.value === savedPin) {
-        overlay.classList.add('hidden');
-        errEl.textContent = '';
-      } else {
-        errEl.textContent = 'PIN-код қәте!';
-        input.value = '';
-      }
+      if (input.value === savedPin) { overlay.classList.add('hidden'); errEl.textContent = ''; }
+      else { errEl.textContent = 'PIN-код қәте!'; input.value = ''; }
     };
     document.getElementById('btnPinUnlock').addEventListener('click', tryUnlock);
-    input.addEventListener('keyup', (e) => {
-      if (input.value.length === 4 || e.key === 'Enter') tryUnlock();
-    });
+    input.addEventListener('keyup', (e) => { if (input.value.length === 4 || e.key === 'Enter') tryUnlock(); });
   }
 
   function initPwaInstall() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       state.deferredInstallPrompt = e;
     });
-    document.getElementById('btnInstallPwa').addEventListener('click', async () => {
-      if (state.deferredInstallPrompt) {
-        state.deferredInstallPrompt.prompt();
-        await state.deferredInstallPrompt.userChoice;
-        state.deferredInstallPrompt = null;
-      } else {
-        showToast('Браузер менюсынан «Экранға қосыў» (Add to Home Screen) таңлаң', 4500);
-      }
-    });
+    const installBtn = document.getElementById('btnInstallPwa');
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (state.deferredInstallPrompt) {
+          state.deferredInstallPrompt.prompt();
+          await state.deferredInstallPrompt.userChoice;
+          state.deferredInstallPrompt = null;
+        } else {
+          showToast('Браузер менюсынан «Экранға қосыў / Установить приложение» таңлаң', 4500);
+        }
+      });
+    }
   }
 
-  // ==================== INIT EVENTS ====================
   function bindEvents() {
-    // Date picker
     const datePicker = document.getElementById('jarvisDatePicker');
     datePicker.value = state.date;
     datePicker.addEventListener('change', () => {
-      if (datePicker.value) {
-        state.date = datePicker.value;
-        loadAllData();
-      }
+      if (datePicker.value) { state.date = datePicker.value; loadAllData(); }
     });
 
-    // Bottom nav
-    document.querySelectorAll('.nav-item').forEach((btn) => {
+    document.querySelectorAll('.hud-tab').forEach((btn) => {
       btn.addEventListener('click', () => switchTab(btn.dataset.tab));
     });
 
-    // Provider chips
     document.querySelectorAll('.prov-chip').forEach((chip) => {
       chip.addEventListener('click', () => {
         state.provider = chip.dataset.provider;
@@ -800,28 +932,34 @@
       });
     });
 
-    // Quick prompts
-    document.querySelectorAll('.quick-chip').forEach((chip) => {
-      chip.addEventListener('click', () => sendChatMessage(chip.dataset.prompt));
+    document.querySelectorAll('.quick-cmd-btn[data-prompt]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        switchTab('hud');
+        sendChatMessage(btn.dataset.prompt);
+      });
     });
 
-    // Chat form
+    document.getElementById('btnClearChat').addEventListener('click', () => {
+      state.messages = [];
+      document.getElementById('chatFeed').innerHTML = '';
+      showToast('Чат тазаланды');
+    });
+
+    document.getElementById('btnRunBioScan').addEventListener('click', () => {
+      sendChatMessage('Толық BIO-PHARMA диагностикасын өткер: 4 филиалдың бүгинги келип-кетиўин, саўдасын, бәсекилеслерди ҳәм саўданы өсириў бойынша ең әҳмийетли 3 қәдемди бер.');
+    });
+
     const chatForm = document.getElementById('chatForm');
     const chatInput = document.getElementById('chatInput');
     chatForm.addEventListener('submit', (e) => {
       e.preventDefault();
       const val = chatInput.value;
       chatInput.value = '';
+      switchTab('hud');
       sendChatMessage(val);
     });
-    chatInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        chatForm.requestSubmit();
-      }
-    });
 
-    // Sales actions
+    // Sales
     document.getElementById('btnPullFApteka').addEventListener('click', pullFromFApteka);
     document.getElementById('fAptekaImageInput').addEventListener('change', (e) => {
       handleFAptekaImageUpload(e.target.files[0]);
@@ -833,36 +971,25 @@
     });
 
     const manualCard = document.getElementById('manualSalesCard');
-    document.getElementById('btnToggleManualSales').addEventListener('click', () => {
-      manualCard.classList.toggle('hidden');
-    });
-    document.getElementById('btnCancelManualSales').addEventListener('click', () => {
-      manualCard.classList.add('hidden');
-    });
+    document.getElementById('btnToggleManualSales').addEventListener('click', () => manualCard.classList.toggle('hidden'));
+    document.getElementById('btnCancelManualSales').addEventListener('click', () => manualCard.classList.add('hidden'));
     document.getElementById('btnSaveManualSales').addEventListener('click', async () => {
       const branch = document.getElementById('manualBranch').value;
       const revenue = Number(document.getElementById('manualRevenue').value || 0);
       const checks = Number(document.getElementById('manualChecks').value || 0);
       const pharmacist = document.getElementById('manualPharmacist').value.trim();
-      if (!revenue) {
-        showToast('Саўда суммасын киритиң');
-        return;
-      }
+      if (!revenue) { showToast('Саўда суммасын киритиң'); return; }
 
       const current = state.salesToday
         ? JSON.parse(JSON.stringify(state.salesToday))
         : { date: state.date, branches: [], pharmacists: [], source: 'manual' };
       current.branches = current.branches || [];
       current.pharmacists = current.pharmacists || [];
-
       const bIdx = current.branches.findIndex((b) => b.name === branch);
-      const branchEntry = { name: branch, revenue, checks, returns: 0 };
-      if (bIdx >= 0) current.branches[bIdx] = branchEntry;
-      else current.branches.push(branchEntry);
-
-      if (pharmacist) {
-        current.pharmacists.push({ name: pharmacist, branch, revenue, checks });
-      }
+      const entry = { name: branch, revenue, checks, returns: 0 };
+      if (bIdx >= 0) current.branches[bIdx] = entry;
+      else current.branches.push(entry);
+      if (pharmacist) current.pharmacists.push({ name: pharmacist, branch, revenue, checks });
       current.totalRevenue = current.branches.reduce((s, b) => s + Number(b.revenue || 0), 0);
       current.totalChecks = current.branches.reduce((s, b) => s + Number(b.checks || 0), 0);
 
@@ -875,12 +1002,12 @@
     });
 
     document.getElementById('btnAnalyzeSalesAI').addEventListener('click', () => {
-      switchTab('chat');
+      switchTab('hud');
       sendChatMessage('Бүгинги F-Apteka саўда есабатын филиаллар ҳәм қызлар бойынша таллап, қайсы филиалды күшейтиў кереклигин айт.');
     });
 
     document.getElementById('btnAnalyzeStaffAI').addEventListener('click', () => {
-      switchTab('chat');
+      switchTab('hud');
       sendChatMessage('Бүгинги 4 филиал хызметкерлериниң келип-кетиў табелин таллап, басқарыўшы ушын қысқа есабат ҳәм усыныс бер.');
     });
 
@@ -903,16 +1030,16 @@
     });
 
     document.getElementById('btnGenIdeasPromo').addEventListener('click', () =>
-      runIdeaGenerator('PINTOK APTEKA (Шымбай, Хожели, Нөкис) ушын усы ҳәптеде ислетиўге болатуғын 5 эффектив акция идеясын бер. Ҳәр биринде күтилетуғын нәтийжесин жаз.')
+      runIdeaGenerator('PINTOK APTEKA (Шымбай, Хожели, Нөкис) ушын усы ҳәптеде ислетиўге болатуғын 5 эффектив акция идеясын бер.')
     );
     document.getElementById('btnGenIdeasUpsell').addEventListener('click', () =>
-      runIdeaGenerator('Аптека сатыўшы қызлары ушын орташа чекти 15-25% көтеретуғын әпиўайы ҳәм сыпайы қосымша сатыў (допродажа) скриптлерин (қарақалпақша) таярлап бер.')
+      runIdeaGenerator('Аптека сатыўшы қызлары ушын орташа чекти 15-25% көтеретуғын әпиўайы қосымша сатыў (допродажа) скриптлерин таярлап бер.')
     );
     document.getElementById('btnGenCompetitorStrategy').addEventListener('click', () =>
-      runIdeaGenerator('Киритилген бәсекилес аптекаларды таллап, PINTOK APTEKA олардан қалай озып кетиўи мүмкинлиги бойынша нақты 5 қәдемлик стратегия дүз.')
+      runIdeaGenerator('Киритилген бәсекилес аптекаларды таллап, PINTOK APTEKA олардан қалай озып кетиўи мүмкинлиги бойынша 5 қәдемлик стратегия дүз.')
     );
 
-    // Settings — AI keys
+    // Settings
     const savedKeys = getClientAiKeys();
     document.getElementById('keyGemini').value = savedKeys.gemini || '';
     document.getElementById('keyOpenAI').value = savedKeys.openai || '';
@@ -920,18 +1047,16 @@
     document.getElementById('keyOpenRouter').value = savedKeys.openrouter || '';
 
     document.getElementById('btnSaveAiKeys').addEventListener('click', () => {
-      const next = {
+      saveJsonLS(LS_KEYS.aiKeys, {
         gemini: document.getElementById('keyGemini').value.trim(),
         openai: document.getElementById('keyOpenAI').value.trim(),
         claude: document.getElementById('keyClaude').value.trim(),
         openrouter: document.getElementById('keyOpenRouter').value.trim()
-      };
-      saveJsonLS(LS_KEYS.aiKeys, next);
+      });
       updateProviderIndicators(state.configuredProviders);
       showToast('✅ AI гилтлери сақланды');
     });
 
-    // Settings — F-Apteka Gateway
     const fCfg = getFAptekaLocalCfg();
     document.getElementById('fAptekaUrlInput').value = fCfg.apiUrl || '';
     document.getElementById('fAptekaTokenInput').value = fCfg.apiToken || '';
@@ -947,12 +1072,8 @@
 
     document.getElementById('btnCopyWebhook').addEventListener('click', async () => {
       const url = document.getElementById('fAptekaWebhookUrl').value;
-      try {
-        await navigator.clipboard.writeText(url);
-        showToast('📋 Webhook мәнзили көширилди!');
-      } catch (_) {
-        showToast(url, 4000);
-      }
+      try { await navigator.clipboard.writeText(url); showToast('📋 Webhook мәнзили көширилди!'); }
+      catch (_) { showToast(url, 4000); }
     });
 
     document.getElementById('btnTestFApteka').addEventListener('click', async () => {
@@ -987,29 +1108,21 @@
           cache[state.date] = data.report;
           saveJsonLS(LS_KEYS.salesCache, cache);
           renderSales();
+          renderCentralHUD();
           renderSettingsStatus();
-          showToast('✅ Тест есабат түсти! «Саўда» бөлимин қараң.');
-          switchTab('sales');
+          showToast('✅ Тест есабат түсти! CENTRAL HUD бетинде көриң.');
+          switchTab('hud');
         }
       } catch (err) {
         showToast(`⚠️ Тест қәтеси: ${err.message}`);
       }
     });
 
-    // PIN setup
     document.getElementById('btnSavePin').addEventListener('click', () => {
       const val = document.getElementById('pinSetupInput').value.trim();
-      if (val && !/^\d{4}$/.test(val)) {
-        showToast('PIN-код дәл 4 саннан ибарат болыўы керек');
-        return;
-      }
-      if (val) {
-        localStorage.setItem(LS_KEYS.pin, val);
-        showToast('🔐 PIN-код орнатылды');
-      } else {
-        localStorage.removeItem(LS_KEYS.pin);
-        showToast('🔓 PIN-код өширилди');
-      }
+      if (val && !/^\d{4}$/.test(val)) { showToast('PIN-код 4 сан болыўы керек'); return; }
+      if (val) { localStorage.setItem(LS_KEYS.pin, val); showToast('🔐 PIN-код орнатылды'); }
+      else { localStorage.removeItem(LS_KEYS.pin); showToast('🔓 PIN-код өширилди'); }
       document.getElementById('pinSetupInput').value = '';
     });
   }
@@ -1017,6 +1130,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     initPinLock();
     initPwaInstall();
+    initTelemetryAnimations();
     setupVoiceInput();
     bindEvents();
     loadAllData();
