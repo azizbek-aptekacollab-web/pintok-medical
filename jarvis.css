@@ -1156,6 +1156,27 @@ body.theme-light .hud-date-input { color-scheme: light; }
   box-shadow: 0 4px 20px rgba(0, 136, 255, 0.3);
 }
 
+@media (max-height: 840px) and (min-width: 1161px) {
+  .topbar-row-1 { min-height: 48px; padding: 5px 22px; }
+  .topbar-row-2 { min-height: 36px; padding: 0 22px; }
+  .hud-tab { padding: 8px 2px; }
+  .hud-main { padding: 8px 22px 10px; }
+  .hud-status-strip { padding-bottom: 5px; margin-bottom: 8px; }
+  .hud-grid-3 { gap: 12px; }
+  .col-left, .col-center, .col-right { gap: 8px; }
+  .hud-card { padding: 10px 13px; }
+  .rev-body { margin-top: 6px; }
+  .kpi-big { font-size: 25px; }
+  .branch-cards-stack { gap: 6px; }
+  .branch-card { padding: 7px 11px 7px 14px; }
+  .branch-track { margin: 5px 0 4px; height: 6px; }
+  .mini-kpi { padding: 7px 9px; }
+  .mini-val { font-size: 17px; margin: 2px 0 1px; }
+  .holo-stage { height: 158px; }
+  .dock-inner { padding: 6px 22px 8px; gap: 6px; }
+  .terminal-input-wrap, .mic-btn, .execute-btn { height: 36px; }
+}
+
 @media (max-width: 760px) {
   .topbar-row-1, .topbar-row-2, .dock-inner { padding-left: 12px; padding-right: 12px; }
   .hud-main { padding: 10px 12px 14px; }
