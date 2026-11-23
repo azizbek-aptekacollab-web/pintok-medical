@@ -81,9 +81,48 @@ html, body {
 .text-secondary { color: var(--secondary); }
 .text-amber { color: var(--amber); }
 .text-red { color: var(--red); }
-.ico-sm { font-size: 17px !important; }
-.ico-xs { font-size: 13px !important; }
+.svg-ico {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.svg-ico-xs {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  display: inline-block;
+}
 
+/* Full-Viewport Flex Shell (prevents header/console overlap on any laptop screen!) */
+.app-viewport {
+  position: relative;
+  z-index: 1;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ==================== TOPBAR ==================== */
+.site-topbar {
+  flex-shrink: 0;
+  z-index: 50;
+  background: var(--header-bg);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 20px rgba(0, 136, 255, 0.1);
+}
+
+.topbar-row-1 {
+  min-height: 54px;
+  padding: 6px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 /* Ambient Background from Stitch */
 .hud-bg-ambient {
   position: fixed;
@@ -117,27 +156,6 @@ html, body {
   background-image: radial-gradient(rgba(56, 189, 248, 0.18) 0.85px, transparent 0.85px);
   background-size: 24px 24px;
   opacity: 0.45;
-}
-
-/* ==================== TOPBAR ==================== */
-.site-topbar {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 50;
-  background: var(--header-bg);
-  backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 4px 20px rgba(0, 136, 255, 0.1);
-}
-
-.topbar-row-1 {
-  min-height: 62px;
-  padding: 8px 28px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 }
 
 .brand-left {
@@ -385,11 +403,12 @@ body.theme-light .hud-date-input { color-scheme: light; }
 
 /* ==================== MAIN WORKSPACE ==================== */
 .hud-main {
-  position: relative;
-  z-index: 1;
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
   max-width: 1540px;
   margin: 0 auto;
-  padding: 122px 28px 118px;
+  padding: 10px 24px 16px;
 }
 
 .hud-status-strip {
@@ -398,8 +417,8 @@ body.theme-light .hud-date-input { color-scheme: light; }
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  padding-bottom: 8px;
-  margin-bottom: 14px;
+  padding-bottom: 7px;
+  margin-bottom: 10px;
   border-bottom: 1px solid var(--border-soft);
 }
 
@@ -720,7 +739,7 @@ body.theme-light .hud-date-input { color-scheme: light; }
 
 .holo-stage {
   position: relative;
-  height: 215px;
+  height: 176px;
   border-radius: 8px;
   background: var(--holo-bg);
   border: 1px solid var(--border);
@@ -945,10 +964,9 @@ body.theme-light .hud-date-input { color-scheme: light; }
 }
 .scan-action-btn:hover { background: var(--primary-solid); color: #fff; }
 
-/* ==================== FIXED BOTTOM CONSOLE ==================== */
+/* ==================== ANCHORED BOTTOM CONSOLE ==================== */
 .console-dock {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
+  flex-shrink: 0;
   z-index: 50;
   background: var(--header-bg);
   backdrop-filter: blur(18px);
@@ -1139,7 +1157,7 @@ body.theme-light .hud-date-input { color-scheme: light; }
 }
 
 @media (max-width: 760px) {
-  .topbar-row-1, .topbar-row-2, .dock-inner { padding-left: 14px; padding-right: 14px; }
-  .hud-main { padding: 158px 14px 136px; }
+  .topbar-row-1, .topbar-row-2, .dock-inner { padding-left: 12px; padding-right: 12px; }
+  .hud-main { padding: 10px 12px 14px; }
   .sys-stats, .col-tag, .branch-pill { display: none; }
 }

@@ -124,11 +124,9 @@
   // ==================== THEME TOGGLE (Brand Aligned Dark <-> Jarıq Fon Light) ====================
   function applyTheme(mode) {
     const isLight = mode === 'light';
-    document.documentElement.className = isLight ? 'light' : 'dark';
-    document.body.className = isLight ? 'theme-light' : 'theme-dark';
-    const icon = document.getElementById('themeIcon');
+    document.documentElement.className = `${isLight ? 'light' : 'dark'} notranslate`;
+    document.body.className = `${isLight ? 'theme-light' : 'theme-dark'} notranslate`;
     const lbl = document.getElementById('themeLabel');
-    if (icon) icon.textContent = isLight ? 'dark_mode' : 'light_mode';
     if (lbl) lbl.textContent = isLight ? 'Qarańǵı HUD' : 'Jarıq Fon';
     saveJsonLS(LS_KEYS.theme, mode);
   }

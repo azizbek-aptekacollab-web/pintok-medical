@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html class="dark" lang="kaa">
+<html class="dark notranslate" lang="kaa" translate="no">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="google" content="notranslate" />
   <title>PINTOK APTEKA // J.A.R.V.I.S. AI CORE v4.2</title>
 
   <link rel="manifest" href="jarvis-manifest.json" />
@@ -15,11 +16,10 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..700,0..1,-50..200" rel="stylesheet" />
-  <link rel="stylesheet" href="jarvis.css?v=4.2" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="jarvis.css?v=4.3" />
 </head>
-<body class="theme-dark">
+<body class="theme-dark notranslate" translate="no">
   <div class="hud-bg-ambient" aria-hidden="true">
     <div class="ambient-glow top"></div>
     <div class="ambient-glow left"></div>
@@ -41,616 +41,610 @@
     </div>
   </div>
 
-  <!-- ==================== FIXED TOP BRANDED HEADER ==================== -->
-  <header class="site-topbar">
-    <div class="topbar-row-1">
-      <div class="brand-left">
-        <div class="brand-logo-box">
-          <img src="logo-apteka.jpg" alt="PINTOK APTEKA 3D Logo" />
-        </div>
-        <div class="brand-titles">
-          <div class="brand-title-line">
-            <span class="brand-name">PINTOK APTEKA // AI CORE v4.2</span>
-            <span class="sec-badge">SEC-LEVEL-0</span>
+  <div class="app-viewport">
+    <!-- ==================== TOP BRANDED HEADER ==================== -->
+    <header class="site-topbar">
+      <div class="topbar-row-1">
+        <div class="brand-left">
+          <div class="brand-logo-box">
+            <img src="logo-apteka.jpg" alt="PINTOK APTEKA 3D Logo" />
           </div>
-          <div class="brand-sub">J.A.R.V.I.S. BIO-PHARMA CENTRAL HUD · 4 BRANCHES</div>
+          <div class="brand-titles">
+            <div class="brand-title-line">
+              <span class="brand-name">PINTOK APTEKA // AI CORE v4.2</span>
+              <span class="sec-badge">SEC-LEVEL-0</span>
+            </div>
+            <div class="brand-sub">J.A.R.V.I.S. BIO-PHARMA CENTRAL HUD · 4 ФИЛИАЛ</div>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="online-pill">
+            <span class="pulse-dot"></span>
+            <span>AI PHARMACIST ONLINE</span>
+          </div>
+
+          <label class="meta-pill date-wrap" title="Сәнени таңлаў">
+            <svg class="svg-ico text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <input type="date" id="jarvisDatePicker" class="hud-date-input" />
+            <span class="live-sync-tag">LIVE</span>
+          </label>
+
+          <div class="meta-pill branch-pill">
+            <svg class="svg-ico text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg>
+            <span>4 ФИЛИАЛ</span>
+          </div>
+
+          <button type="button" class="theme-toggle-btn" id="btnThemeToggle" title="Жарық / Қараңғы фон">
+            <svg class="svg-ico" id="themeSvg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/></svg>
+            <span id="themeLabel">Jarıq Fon</span>
+          </button>
+
+          <a href="index.html" class="user-avatar-btn" title="Аптека классик панелине өтиў">
+            <svg class="svg-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 5v14M5 12h14"/></svg>
+          </a>
         </div>
       </div>
 
-      <div class="topbar-right">
-        <div class="online-pill">
-          <span class="pulse-dot"></span>
-          <span>AI PHARMACIST ONLINE</span>
+      <div class="topbar-row-2">
+        <nav class="hud-nav" aria-label="Бөлимлер">
+          <button type="button" class="hud-tab active" data-tab="hud">CENTRAL HUD</button>
+          <button type="button" class="hud-tab" data-tab="sales">F-APTEKA САЎДА</button>
+          <button type="button" class="hud-tab" data-tab="staff">ҚЫЗЛАР ТАБЕЛИ</button>
+          <button type="button" class="hud-tab" data-tab="ideas">БӘСЕКИЛЕС &amp; ИДЕЯ</button>
+          <button type="button" class="hud-tab" data-tab="settings">САЗЛАЎ</button>
+        </nav>
+
+        <div class="engine-bar" aria-label="AI Моделлери">
+          <span class="engine-label">CORE ENGINE:</span>
+          <button type="button" class="prov-chip active" data-provider="gemini">
+            <span class="dot" id="dot-gemini"></span>GEMINI
+          </button>
+          <button type="button" class="prov-chip" data-provider="openai">
+            <span class="dot" id="dot-openai"></span>CHATGPT
+          </button>
+          <button type="button" class="prov-chip" data-provider="claude">
+            <span class="dot" id="dot-claude"></span>CLAUDE
+          </button>
+          <button type="button" class="prov-chip" data-provider="openrouter">
+            <span class="dot" id="dot-openrouter"></span>OPENROUTER
+          </button>
+          <button type="button" class="prov-chip council" data-provider="council">
+            ⚡ 3-AI КЕҢЕС
+          </button>
         </div>
+      </div>
+    </header>
 
-        <label class="meta-pill date-wrap" title="Сәнени таңлаў">
-          <span class="material-symbols-outlined ico-sm text-primary">calendar_today</span>
-          <input type="date" id="jarvisDatePicker" class="hud-date-input" />
-          <span class="live-sync-tag">· LIVE SYNC</span>
-        </label>
-
-        <div class="meta-pill branch-pill">
-          <span class="material-symbols-outlined ico-sm text-secondary">storefront</span>
-          <span>ALL 4 BRANCHES</span>
+    <!-- ==================== SCROLLABLE MAIN WORKSPACE ==================== -->
+    <main class="hud-main">
+      <!-- Subtle HUD Status Line -->
+      <div class="hud-status-strip">
+        <div class="status-left">
+          <span class="ping-dot"></span>
+          <span class="cluster-tag">ARRAY CLUSTER: 04_NODES // STABLE</span>
+          <span class="sep">|</span>
+          <span class="crypto-tag">STITCH BIO-PHARMA FEED (TLS-BIO-v2)</span>
         </div>
-
-        <button type="button" class="theme-toggle-btn" id="btnThemeToggle" title="Жарық / Қараңғы фонды алмастырыў">
-          <span class="material-symbols-outlined ico-sm" id="themeIcon">light_mode</span>
-          <span id="themeLabel">Jarıq Fon</span>
-        </button>
-
-        <a href="index.html" class="user-avatar-btn" title="Аптека классик панелине өтиў">
-          <span class="material-symbols-outlined">local_hospital</span>
-        </a>
+        <div class="status-right">
+          <span><b>FPS:</b> 60.0</span>
+          <span>·</span>
+          <span><b>STAFF:</b> <span id="stripStaffRatio">0/15</span></span>
+          <span>·</span>
+          <span><b>F-APTEKA:</b> <span id="stripSyncState">READY</span></span>
+        </div>
       </div>
-    </div>
 
-    <div class="topbar-row-2">
-      <nav class="hud-nav" aria-label="Бөлимлер">
-        <button type="button" class="hud-tab active" data-tab="hud">CENTRAL HUD</button>
-        <button type="button" class="hud-tab" data-tab="sales">F-APTEKA САЎДА</button>
-        <button type="button" class="hud-tab" data-tab="staff">ҚЫЗЛАР ТАБЕЛИ</button>
-        <button type="button" class="hud-tab" data-tab="ideas">БӘСЕКИЛЕС &amp; ИДЕЯ</button>
-        <button type="button" class="hud-tab" data-tab="settings">САЗЛАЎ</button>
-      </nav>
+      <!-- ==================== VIEW 1: CENTRAL HUD ==================== -->
+      <section class="tab-view active" id="tab-hud">
+        <div class="hud-grid-3">
 
-      <div class="engine-bar" aria-label="AI Моделлери">
-        <span class="engine-label">CORE ENGINE:</span>
-        <button type="button" class="prov-chip active" data-provider="gemini">
-          <span class="dot" id="dot-gemini"></span>GEMINI
-        </button>
-        <button type="button" class="prov-chip" data-provider="openai">
-          <span class="dot" id="dot-openai"></span>CHATGPT
-        </button>
-        <button type="button" class="prov-chip" data-provider="claude">
-          <span class="dot" id="dot-claude"></span>CLAUDE
-        </button>
-        <button type="button" class="prov-chip" data-provider="openrouter">
-          <span class="dot" id="dot-openrouter"></span>OPENROUTER
-        </button>
-        <button type="button" class="prov-chip council" data-provider="council">
-          ⚡ 3-AI КЕҢЕС
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <!-- ==================== MAIN WORKSPACE ==================== -->
-  <main class="hud-main">
-    <!-- Subtle HUD Status Line -->
-    <div class="hud-status-strip">
-      <div class="status-left">
-        <span class="ping-dot"></span>
-        <span class="cluster-tag">ARRAY CLUSTER: 04_NODES // STABLE</span>
-        <span class="sep">|</span>
-        <span class="crypto-tag">STITCH-ALIGNED BIO-PHARMA FEED (TLS-BIO-v2)</span>
-      </div>
-      <div class="status-right">
-        <span><b>FPS:</b> 60.0</span>
-        <span>·</span>
-        <span><b>STAFF:</b> <span id="stripStaffRatio">0/15</span></span>
-        <span>·</span>
-        <span><b>F-APTEKA:</b> <span id="stripSyncState">READY</span></span>
-      </div>
-    </div>
-
-    <!-- ==================== VIEW 1: CENTRAL HUD ==================== -->
-    <section class="tab-view active" id="tab-hud">
-      <div class="hud-grid-3">
-
-        <!-- LEFT COLUMN (4 cols): 4 BRANCHES & REVENUE -->
-        <div class="col-left">
-          <div class="hud-card revenue-card">
-            <div class="neon-top-line"></div>
-            <div class="rev-head">
-              <div class="rev-brand">
-                <div class="rev-icon-box">
-                  <span class="material-symbols-outlined">local_pharmacy</span>
+          <!-- LEFT COLUMN: 4 BRANCHES & REVENUE -->
+          <div class="col-left">
+            <div class="hud-card revenue-card">
+              <div class="neon-top-line"></div>
+              <div class="rev-head">
+                <div class="rev-brand">
+                  <div class="rev-icon-box">
+                    <svg class="svg-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6v12M6 12h12"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
+                  </div>
+                  <div>
+                    <span class="mono-kicker">// DAILY_AGGREGATE_SALES</span>
+                    <div class="card-headline">4 BRANCHES REVENUE</div>
+                  </div>
                 </div>
+                <span class="delta-badge" id="hudSalesBadge">
+                  <svg class="svg-ico-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                  <span id="hudSalesBadgeText">LIVE SYNC</span>
+                </span>
+              </div>
+
+              <div class="rev-body">
                 <div>
-                  <span class="mono-kicker">// DAILY_AGGREGATE_SALES</span>
-                  <div class="card-headline">4 BRANCHES REVENUE</div>
-                </div>
-              </div>
-              <span class="delta-badge" id="hudSalesBadge">
-                <span class="material-symbols-outlined ico-xs">trending_up</span>
-                <span id="hudSalesBadgeText">LIVE SYNC</span>
-              </span>
-            </div>
-
-            <div class="rev-body">
-              <div>
-                <div class="kpi-big">
-                  <span id="hudTotalRevenue">0</span>
-                  <span class="kpi-unit">UZS</span>
-                </div>
-                <p class="rev-sub" id="hudRevenueSub">F-Apteka есабаты күтилмекте · Қызлар табели актив</p>
-              </div>
-              <div class="mini-bars" aria-hidden="true">
-                <span class="b1"></span>
-                <span class="b2"></span>
-                <span class="b3"></span>
-                <span class="b4"></span>
-                <span class="b5"></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 4 Branch Cards -->
-          <div class="branch-cards-stack" id="hudBranchList"></div>
-
-          <!-- 3 Mini KPI Cards -->
-          <div class="mini-kpi-row">
-            <div class="hud-card mini-kpi">
-              <span class="mono-kicker">ON DUTY</span>
-              <div class="mini-val green"><span id="hudMetric1Val">0</span><small id="hudMetric1Total">/0</small></div>
-              <span class="mini-sub green" id="hudMetric1Sub">0% ACTIVE</span>
-            </div>
-            <div class="hud-card mini-kpi">
-              <span class="mono-kicker">LATE ALERT</span>
-              <div class="mini-val amber"><span id="hudMetric2Val">0</span><small>PERS</small></div>
-              <span class="mini-sub amber" id="hudMetric2Sub">ТАРТИП БАҚЛАЎДА</span>
-            </div>
-            <div class="hud-card mini-kpi">
-              <span class="mono-kicker">AVG CHECK</span>
-              <div class="mini-val primary"><span id="hudMetric3Val">0</span><small>UZS</small></div>
-              <span class="mini-sub primary" id="hudMetric3Sub">0 ЧЕК</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- CENTER COLUMN (5 cols): TELEMETRY + HOLOGRAM + LIVE CHAT -->
-        <div class="col-center">
-          <!-- Telemetry Card -->
-          <div class="hud-card telemetry-card">
-            <div class="neon-top-line alt"></div>
-            <div class="tele-head">
-              <div class="tele-title-wrap">
-                <span class="material-symbols-outlined ico-sm text-primary">ecg_heart</span>
-                <span class="card-headline">BIO-PHARMA TELEMETRY</span>
-              </div>
-              <span class="fps-pill">60 FPS // LIVE</span>
-            </div>
-
-            <div class="ecg-viewport">
-              <canvas id="ecgCanvas" height="68"></canvas>
-            </div>
-
-            <div class="tele-footer">
-              <div><span class="lbl">PULSE:</span> <span class="val green">BPM: 74 [STABLE]</span></div>
-              <div><span class="lbl">FLUX:</span> <span class="val primary">PHARMA-FLUX: 99.4%</span></div>
-              <div><span class="lbl">TEMP:</span> <span class="val">36.6°C</span></div>
-            </div>
-          </div>
-
-          <!-- Main Hologram Avatar + Chat Stream Card -->
-          <div class="hud-card hologram-card">
-            <span class="corner tl"></span><span class="corner tr"></span>
-            <span class="corner bl"></span><span class="corner br"></span>
-
-            <div class="holo-top-row">
-              <div class="unit-cluster">
-                <span class="unit-tag">UNIT: J.A.R.V.I.S.-RX01</span>
-                <span class="loc-tag">LOC: MAIN_CORE</span>
-              </div>
-              <div class="state-pill">
-                <span class="pulse-dot"></span>
-                <span id="jarvisStateBadge">STATE: IDLE · LISTENING</span>
-              </div>
-            </div>
-
-            <div class="holo-stage" id="holoStage">
-              <div class="holo-ring r1"></div>
-              <div class="holo-ring r2"></div>
-              <div class="holo-ring r3"></div>
-              <span class="angle-tag a1">045° AZM</span>
-              <span class="angle-tag a2">180° RAD</span>
-              <span class="angle-tag a3">315° LAT</span>
-
-              <div class="holo-core-inner">
-                <!-- PINTOK Double-Loop Pharmacy Cross SVG from Stitch Brand Aligned -->
-                <div class="cross-emblem">
-                  <svg viewBox="0 0 64 56" class="cross-svg">
-                    <path d="M 22 14 L 32 4 L 42 14 L 32 24 Z" fill="none" stroke="#22c55e" stroke-linejoin="round" stroke-width="4"></path>
-                    <path d="M 32 4 L 52 4 L 52 24 L 32 24" fill="none" stroke="#22c55e" stroke-linejoin="round" stroke-width="4"></path>
-                    <path d="M 12 32 L 32 32 L 32 52 L 12 52 Z" fill="none" stroke="#0088ff" stroke-linejoin="round" stroke-width="4"></path>
-                    <path d="M 32 32 L 42 42 L 32 52" fill="none" stroke="#38bdf8" stroke-linejoin="round" stroke-width="4"></path>
-                  </svg>
-                </div>
-
-                <div class="holo-plaque">
-                  <div class="plaque-top">
-                    <span class="plaque-brand">PINTOK</span>
-                    <span class="plaque-rx">RX-AI</span>
+                  <div class="kpi-big">
+                    <span id="hudTotalRevenue">0</span>
+                    <span class="kpi-unit">UZS</span>
                   </div>
-                  <div class="plaque-sub">APTEKA CORE</div>
-                  <div class="plaque-eq" id="plaqueEq">
-                    <span></span><span></span><span></span><span></span><span></span><span></span>
+                  <p class="rev-sub" id="hudRevenueSub">F-Apteka есабаты күтилмекте · Қызлар табели актив</p>
+                </div>
+                <div class="mini-bars" aria-hidden="true">
+                  <span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span><span class="b5"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4 Branch Cards -->
+            <div class="branch-cards-stack" id="hudBranchList"></div>
+
+            <!-- 3 Mini KPI Cards -->
+            <div class="mini-kpi-row">
+              <div class="hud-card mini-kpi">
+                <span class="mono-kicker">ON DUTY</span>
+                <div class="mini-val green"><span id="hudMetric1Val">0</span><small id="hudMetric1Total">/0</small></div>
+                <span class="mini-sub green" id="hudMetric1Sub">0% ACTIVE</span>
+              </div>
+              <div class="hud-card mini-kpi">
+                <span class="mono-kicker">LATE ALERT</span>
+                <div class="mini-val amber"><span id="hudMetric2Val">0</span><small>PERS</small></div>
+                <span class="mini-sub amber" id="hudMetric2Sub">КЕШИГИЎ ЖОҚ</span>
+              </div>
+              <div class="hud-card mini-kpi">
+                <span class="mono-kicker">AVG CHECK</span>
+                <div class="mini-val primary"><span id="hudMetric3Val">0</span><small>UZS</small></div>
+                <span class="mini-sub primary" id="hudMetric3Sub">0 ЧЕК</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CENTER COLUMN: TELEMETRY + HOLOGRAM + LIVE CHAT -->
+          <div class="col-center">
+            <div class="hud-card telemetry-card">
+              <div class="neon-top-line alt"></div>
+              <div class="tele-head">
+                <div class="tele-title-wrap">
+                  <svg class="svg-ico text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  <span class="card-headline">BIO-PHARMA TELEMETRY</span>
+                </div>
+                <span class="fps-pill">60 FPS // LIVE</span>
+              </div>
+
+              <div class="ecg-viewport">
+                <canvas id="ecgCanvas" height="58"></canvas>
+              </div>
+
+              <div class="tele-footer">
+                <div><span class="lbl">PULSE:</span> <span class="val green">BPM: 74 [STABLE]</span></div>
+                <div><span class="lbl">FLUX:</span> <span class="val primary">PHARMA-FLUX: 99.4%</span></div>
+                <div><span class="lbl">TEMP:</span> <span class="val">36.6°C</span></div>
+              </div>
+            </div>
+
+            <div class="hud-card hologram-card">
+              <span class="corner tl"></span><span class="corner tr"></span>
+              <span class="corner bl"></span><span class="corner br"></span>
+
+              <div class="holo-top-row">
+                <div class="unit-cluster">
+                  <span class="unit-tag">UNIT: J.A.R.V.I.S.-RX01</span>
+                  <span class="loc-tag">LOC: MAIN_CORE</span>
+                </div>
+                <div class="state-pill">
+                  <span class="pulse-dot"></span>
+                  <span id="jarvisStateBadge">STATE: IDLE · LISTENING</span>
+                </div>
+              </div>
+
+              <div class="holo-stage" id="holoStage">
+                <div class="holo-ring r1"></div>
+                <div class="holo-ring r2"></div>
+                <div class="holo-ring r3"></div>
+                <span class="angle-tag a1">045° AZM</span>
+                <span class="angle-tag a2">180° RAD</span>
+                <span class="angle-tag a3">315° LAT</span>
+
+                <div class="holo-core-inner">
+                  <div class="cross-emblem">
+                    <svg viewBox="0 0 64 56" class="cross-svg">
+                      <path d="M 22 14 L 32 4 L 42 14 L 32 24 Z" fill="none" stroke="#22c55e" stroke-linejoin="round" stroke-width="4"></path>
+                      <path d="M 32 4 L 52 4 L 52 24 L 32 24" fill="none" stroke="#22c55e" stroke-linejoin="round" stroke-width="4"></path>
+                      <path d="M 12 32 L 32 32 L 32 52 L 12 52 Z" fill="none" stroke="#0088ff" stroke-linejoin="round" stroke-width="4"></path>
+                      <path d="M 32 32 L 42 42 L 32 52" fill="none" stroke="#38bdf8" stroke-linejoin="round" stroke-width="4"></path>
+                    </svg>
+                  </div>
+
+                  <div class="holo-plaque">
+                    <div class="plaque-top">
+                      <span class="plaque-brand">PINTOK</span>
+                      <span class="plaque-rx">RX-AI</span>
+                    </div>
+                    <div class="plaque-sub">APTEKA CORE</div>
+                    <div class="plaque-eq" id="plaqueEq">
+                      <span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div class="quote-banner">
-              <span class="material-symbols-outlined ico-sm text-primary">terminal</span>
-              <p>“Ассалаўма алейкум! Мен J.A.R.V.I.S. — PINTOK APTEKA басқарыўшысының ақыллы жәрдемшисимен.”</p>
-            </div>
+              <div class="quote-banner">
+                <svg class="svg-ico text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                <p>“Ассалаўма алейкум! Мен J.A.R.V.I.S. — PINTOK APTEKA басқарыўшысының ақыллы жәрдемшисимен.”</p>
+              </div>
 
-            <div class="chat-feed" id="chatFeed"></div>
+              <div class="chat-feed" id="chatFeed"></div>
+            </div>
           </div>
+
+          <!-- RIGHT COLUMN: AI CORE DIAGNOSTICS & ALERTS -->
+          <div class="col-right">
+            <div class="hud-card diag-card">
+              <div class="neon-top-line"></div>
+              <div class="diag-head">
+                <span class="card-headline">AI CORE DIAGNOSTICS</span>
+                <span class="ver-pill">v4.2</span>
+              </div>
+
+              <div class="gauges-row">
+                <div class="gauge-item">
+                  <div class="donut-box">
+                    <svg class="donut-svg" viewBox="0 0 36 36">
+                      <path class="donut-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path class="donut-arc primary" id="gaugeAiRing" stroke-dasharray="68, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <span class="donut-num text-primary" id="gaugeAiVal">68%</span>
+                  </div>
+                  <span class="donut-lbl">NEURAL LOAD</span>
+                </div>
+
+                <div class="gauge-item">
+                  <div class="donut-box">
+                    <svg class="donut-svg" viewBox="0 0 36 36">
+                      <path class="donut-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path class="donut-arc secondary" id="gaugeStaffRing" stroke-dasharray="94, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <span class="donut-num text-secondary" id="gaugeStaffVal">94%</span>
+                  </div>
+                  <span class="donut-lbl">STAFF SYNC</span>
+                </div>
+
+                <div class="gauge-item">
+                  <div class="donut-box">
+                    <svg class="donut-svg" viewBox="0 0 36 36">
+                      <defs>
+                        <linearGradient id="gaugeGrad" x1="0%" x2="100%" y1="0%" y2="100%">
+                          <stop offset="0%" stop-color="#0088ff"></stop>
+                          <stop offset="100%" stop-color="#22c55e"></stop>
+                        </linearGradient>
+                      </defs>
+                      <path class="donut-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                      <path class="donut-arc grad" id="gaugeSpeedRing" stroke-dasharray="97, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <span class="donut-num text-primary" id="gaugeSpeedVal">97%</span>
+                  </div>
+                  <span class="donut-lbl">BOT SPEED</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="hud-card alerts-card">
+              <div class="alerts-head">
+                <div class="alerts-title-wrap">
+                  <svg class="svg-ico text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                  <span class="card-headline">SMART PHARMA ALERTS</span>
+                </div>
+                <span class="auto-ai-pill">
+                  <span class="pulse-dot"></span>AUTO-AI
+                </span>
+              </div>
+
+              <div class="alerts-stack" id="smartAlertsList"></div>
+
+              <button type="button" class="scan-action-btn" id="btnRunBioScan">
+                <svg class="svg-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/></svg>
+                <span>+ RUN FULL BIO-PHARMA SCAN</span>
+              </button>
+            </div>
+          </div>
+
         </div>
+      </section>
 
-        <!-- RIGHT COLUMN (3 cols): AI CORE DIAGNOSTICS & ALERTS -->
-        <div class="col-right">
-          <div class="hud-card diag-card">
-            <div class="neon-top-line"></div>
-            <div class="diag-head">
-              <span class="card-headline">AI CORE DIAGNOSTICS</span>
-              <span class="ver-pill">v4.2</span>
+      <!-- ==================== VIEW 2: F-APTEKA SALES ==================== -->
+      <section class="tab-view" id="tab-sales">
+        <div class="hud-card">
+          <div class="neon-top-line"></div>
+          <div class="panel-head">
+            <div>
+              <span class="mono-kicker">F-APTEKA ИНТЕГРАЦИЯ ШЛЮЗИ</span>
+              <h2 class="section-title">КҮНДЕЛИКЛИ САЎДА АНАЛИЗИ</h2>
+              <p class="section-sub" id="fAptekaStatusText">Тайын — API мәнзили киритилсе автомат жалғанады</p>
             </div>
-
-            <div class="gauges-row">
-              <div class="gauge-item">
-                <div class="donut-box">
-                  <svg class="donut-svg" viewBox="0 0 36 36">
-                    <path class="donut-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    <path class="donut-arc primary" id="gaugeAiRing" stroke-dasharray="68, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  </svg>
-                  <span class="donut-num text-primary" id="gaugeAiVal">68%</span>
-                </div>
-                <span class="donut-lbl">NEURAL LOAD</span>
-              </div>
-
-              <div class="gauge-item">
-                <div class="donut-box">
-                  <svg class="donut-svg" viewBox="0 0 36 36">
-                    <path class="donut-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    <path class="donut-arc secondary" id="gaugeStaffRing" stroke-dasharray="94, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  </svg>
-                  <span class="donut-num text-secondary" id="gaugeStaffVal">94%</span>
-                </div>
-                <span class="donut-lbl">STAFF SYNC</span>
-              </div>
-
-              <div class="gauge-item">
-                <div class="donut-box">
-                  <svg class="donut-svg" viewBox="0 0 36 36">
-                    <defs>
-                      <linearGradient id="gaugeGrad" x1="0%" x2="100%" y1="0%" y2="100%">
-                        <stop offset="0%" stop-color="#0088ff"></stop>
-                        <stop offset="100%" stop-color="#22c55e"></stop>
-                      </linearGradient>
-                    </defs>
-                    <path class="donut-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    <path class="donut-arc grad" id="gaugeSpeedRing" stroke-dasharray="97, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                  </svg>
-                  <span class="donut-num text-primary" id="gaugeSpeedVal">97%</span>
-                </div>
-                <span class="donut-lbl">BOT SPEED</span>
-              </div>
-            </div>
+            <button type="button" class="hud-btn primary" id="btnPullFApteka">🔄 СИНХРОНЛАЎ</button>
           </div>
 
-          <!-- Smart Pharma Alerts -->
-          <div class="hud-card alerts-card">
-            <div class="alerts-head">
-              <div class="alerts-title-wrap">
-                <span class="material-symbols-outlined ico-sm text-secondary">notifications_active</span>
-                <span class="card-headline">SMART PHARMA ALERTS</span>
-              </div>
-              <span class="auto-ai-pill">
-                <span class="pulse-dot"></span>AUTO-AI
-              </span>
-            </div>
-
-            <div class="alerts-stack" id="smartAlertsList"></div>
-
-            <button type="button" class="scan-action-btn" id="btnRunBioScan">
-              <span class="material-symbols-outlined ico-sm">radiology</span>
-              <span>+ RUN FULL BIO-PHARMA SCAN</span>
+          <div class="upload-grid-3">
+            <label class="hud-tile">
+              <input type="file" id="fAptekaImageInput" accept="image/*" capture="environment" hidden />
+              <span class="tile-ico">📷</span>
+              <strong>F-Apteka Скриншот / Сүўрет</strong>
+              <small>Gemini Vision санларды автомат оқыйды</small>
+            </label>
+            <label class="hud-tile">
+              <input type="file" id="fAptekaFileInput" accept=".csv,.txt,.tsv,.json" hidden />
+              <span class="tile-ico">📄</span>
+              <strong>CSV / JSON Экспорт</strong>
+              <small>F-Apteka программасынан жүклеў</small>
+            </label>
+            <button type="button" class="hud-tile" id="btnToggleManualSales">
+              <span class="tile-ico">✍️</span>
+              <strong>Қолда киритиў</strong>
+              <small>Филиал ҳәм фармацевт саўдасын жазыў</small>
             </button>
           </div>
         </div>
 
-      </div>
-    </section>
-
-    <!-- ==================== VIEW 2: F-APTEKA SALES ==================== -->
-    <section class="tab-view" id="tab-sales">
-      <div class="hud-card">
-        <div class="neon-top-line"></div>
-        <div class="panel-head">
-          <div>
-            <span class="mono-kicker">F-APTEKA ИНТЕГРАЦИЯ ШЛЮЗИ</span>
-            <h2 class="section-title">КҮНДЕЛИКЛИ САЎДА АНАЛИЗИ</h2>
-            <p class="section-sub" id="fAptekaStatusText">Тайын — API мәнзили киритилсе автомат жалғанады</p>
-          </div>
-          <button type="button" class="hud-btn primary" id="btnPullFApteka">🔄 СИНХРОНЛАЎ</button>
-        </div>
-
-        <div class="upload-grid-3">
-          <label class="hud-tile">
-            <input type="file" id="fAptekaImageInput" accept="image/*" capture="environment" hidden />
-            <span class="tile-ico">📷</span>
-            <strong>F-Apteka Скриншот / Сүўрет</strong>
-            <small>Gemini Vision санларды автомат оқыйды</small>
-          </label>
-          <label class="hud-tile">
-            <input type="file" id="fAptekaFileInput" accept=".csv,.txt,.tsv,.json" hidden />
-            <span class="tile-ico">📄</span>
-            <strong>CSV / JSON Экспорт</strong>
-            <small>F-Apteka программасынан жүклеў</small>
-          </label>
-          <button type="button" class="hud-tile" id="btnToggleManualSales">
-            <span class="tile-ico">✍️</span>
-            <strong>Қолда киритиў</strong>
-            <small>Филиал ҳәм фармацевт саўдасын жазыў</small>
-          </button>
-        </div>
-      </div>
-
-      <div class="hud-card hidden" id="manualSalesCard">
-        <h3 class="section-title">✍️ Күнлик саўда киритиў</h3>
-        <div class="form-grid">
-          <label>Филиал
-            <select id="manualBranch">
-              <option value="1-Филиал">1-Филиал (Шымбай 5-этаж)</option>
-              <option value="2-Филиал">2-Филиал (Шымбай Базар)</option>
-              <option value="3-Филиал">3-Филиал (Хожели)</option>
-              <option value="4-Филиал">4-Филиал (Нөкис)</option>
-            </select>
-          </label>
-          <label>Саўда суммасы (сум)
-            <input type="number" id="manualRevenue" placeholder="Мысалы: 18500000" />
-          </label>
-          <label>Чеклер саны
-            <input type="number" id="manualChecks" placeholder="Мысалы: 145" />
-          </label>
-          <label>Фармацевт аты (қәлеўиңизше)
-            <input type="text" id="manualPharmacist" placeholder="Мысалы: Айгүл" />
-          </label>
-        </div>
-        <div class="row-actions">
-          <button type="button" class="hud-btn primary" id="btnSaveManualSales">Сақлаў</button>
-          <button type="button" class="hud-btn ghost" id="btnCancelManualSales">Бийкарлаў</button>
-        </div>
-      </div>
-
-      <div class="kpi-grid-4">
-        <div class="hud-card kpi-box">
-          <div class="mono-kicker">ЖӘМИ САЎДА</div>
-          <div class="kpi-val text-secondary" id="kpiTotalRevenue">0 сум</div>
-        </div>
-        <div class="hud-card kpi-box">
-          <div class="mono-kicker">ЧЕКЛЕР САНЫ</div>
-          <div class="kpi-val text-primary" id="kpiTotalChecks">0</div>
-        </div>
-        <div class="hud-card kpi-box">
-          <div class="mono-kicker">ОРТАША ЧЕК</div>
-          <div class="kpi-val" id="kpiAvgCheck">0 сум</div>
-        </div>
-        <div class="hud-card kpi-box">
-          <div class="mono-kicker">ҚАЙТАРЫЎЛАР</div>
-          <div class="kpi-val text-amber" id="kpiReturns">0 сум</div>
-        </div>
-      </div>
-
-      <div class="hud-grid-2">
-        <div class="hud-card">
-          <div class="panel-head">
-            <h3 class="section-title">🏥 ФИЛИАЛЛАР БОЙЫНША САЎДА</h3>
-            <button type="button" class="hud-btn secondary sm" id="btnAnalyzeSalesAI">🤖 AI ТАЛЛАЎ</button>
-          </div>
-          <div id="salesBranchesList" class="list-stack"></div>
-        </div>
-        <div class="hud-card">
-          <div class="panel-head">
-            <h3 class="section-title">🏆 САТЫЎШЫ ҚЫЗЛАР РЕЙТИНГИ</h3>
-          </div>
-          <div id="salesPharmacistsList" class="list-stack"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== VIEW 3: STAFF ATTENDANCE ==================== -->
-    <section class="tab-view" id="tab-staff">
-      <div class="kpi-grid-4">
-        <div class="hud-card kpi-box">
-          <div class="mono-kicker">ЖӘМИ ҚЫЗЛАР</div>
-          <div class="kpi-val" id="attTotal">0</div>
-        </div>
-        <div class="hud-card kpi-box">
-          <div class="mono-kicker">ЖУМЫСТА</div>
-          <div class="kpi-val text-secondary" id="attPresent">0</div>
-        </div>
-        <div class="hud-card kpi-box">
-          <div class="mono-kicker">КЕШИККЕН</div>
-          <div class="kpi-val text-amber" id="attLate">0</div>
-        </div>
-        <div class="hud-card kpi-box">
-          <div class="mono-kicker">ШТРАФЛАР</div>
-          <div class="kpi-val text-red" id="attFine">0 сум</div>
-        </div>
-      </div>
-
-      <div class="hud-card">
-        <div class="panel-head">
-          <h3 class="section-title">👩‍⚕️ 4 ФИЛИАЛ КЕЛИП-КЕТИЎ ТАБЕЛИ</h3>
-          <button type="button" class="hud-btn primary sm" id="btnAnalyzeStaffAI">🤖 AI ЕСАБАТ</button>
-        </div>
-        <div id="staffBranchesList" class="hud-grid-2"></div>
-      </div>
-    </section>
-
-    <!-- ==================== VIEW 4: COMPETITORS & IDEAS ==================== -->
-    <section class="tab-view" id="tab-ideas">
-      <div class="hud-card">
-        <div class="neon-top-line"></div>
-        <h2 class="section-title">🚀 САЎДАНЫ КӨТЕРИЎ ИДЕЯЛАРЫ &amp; СТРАТЕГИЯ</h2>
-        <p class="section-sub">Шымбай, Хожели ҳәм Нөкис филиаллары ушын Jarvis AI тәрепинен таярланатуғын әмелий усыныслар</p>
-        <div class="row-actions wrap">
-          <button type="button" class="hud-btn primary sm" id="btnGenIdeasPromo">🎁 Акция идеялары</button>
-          <button type="button" class="hud-btn secondary sm" id="btnGenIdeasUpsell">💬 Қызларға сатыў скрипти</button>
-          <button type="button" class="hud-btn secondary sm" id="btnGenCompetitorStrategy">🎯 Бәсекилес анализи</button>
-        </div>
-        <div id="ideasOutput" class="ai-output hidden"></div>
-      </div>
-
-      <div class="hud-card">
-        <div class="panel-head">
-          <h3 class="section-title">🏪 БӘСЕКИЛЕС (КОНКУРЕНТ) АПТЕКАЛАР</h3>
-          <button type="button" class="hud-btn secondary sm" id="btnToggleCompForm">+ Қосыў</button>
-        </div>
-
-        <form class="comp-form hidden" id="compForm">
+        <div class="hud-card hidden" id="manualSalesCard">
+          <h3 class="section-title">✍️ Күнлик саўда киритиў</h3>
           <div class="form-grid">
-            <label>Аптека аты
-              <input type="text" id="compName" placeholder="Мысалы: Аптека №5" required />
-            </label>
-            <label>Қайсы филиал қасында
-              <select id="compBranch">
-                <option value="1-Филиал (Шымбай 5-этаж)">1-Филиал (Шымбай 5-этаж)</option>
-                <option value="2-Филиал (Шымбай Базар)">2-Филиал (Шымбай Базар)</option>
-                <option value="3-Филиал (Хожели)">3-Филиал (Хожели)</option>
-                <option value="4-Филиал (Нөкис)">4-Филиал (Нөкис)</option>
+            <label>Филиал
+              <select id="manualBranch">
+                <option value="1-Филиал">1-Филиал (Шымбай 5-этаж)</option>
+                <option value="2-Филиал">2-Филиал (Шымбай Базар)</option>
+                <option value="3-Филиал">3-Филиал (Хожели)</option>
+                <option value="4-Филиал">4-Филиал (Нөкис)</option>
               </select>
             </label>
-            <label>Баҳа дәрежеси
-              <select id="compPrice">
-                <option value="Арзан">Арзан</option>
-                <option value="Орташа" selected>Орташа</option>
-                <option value="Қымбат">Қымбат</option>
-              </select>
+            <label>Саўда суммасы (сум)
+              <input type="number" id="manualRevenue" placeholder="Мысалы: 18500000" />
             </label>
-            <label>Акция / Өзгешелиги
-              <input type="text" id="compPromos" placeholder="Мысалы: 24/7 ислейди, 5% скидка" />
+            <label>Чеклер саны
+              <input type="number" id="manualChecks" placeholder="Мысалы: 145" />
             </label>
-            <label>Күшли тәрепи
-              <input type="text" id="compStrengths" placeholder="Мысалы: ассортимент кең" />
-            </label>
-            <label>Әззи тәрепи
-              <input type="text" id="compWeaknesses" placeholder="Мысалы: гезек көп, хызмет әсте" />
+            <label>Фармацевт аты (қәлеўиңизше)
+              <input type="text" id="manualPharmacist" placeholder="Мысалы: Айгүл" />
             </label>
           </div>
           <div class="row-actions">
-            <button type="submit" class="hud-btn primary sm">Сақлаў</button>
-            <button type="button" class="hud-btn ghost sm" id="btnCancelComp">Бийкарлаў</button>
+            <button type="button" class="hud-btn primary" id="btnSaveManualSales">Сақлаў</button>
+            <button type="button" class="hud-btn ghost" id="btnCancelManualSales">Бийкарлаў</button>
           </div>
-        </form>
+        </div>
 
-        <div id="competitorsList" class="hud-grid-2"></div>
-      </div>
-    </section>
-
-    <!-- ==================== VIEW 5: SETTINGS ==================== -->
-    <section class="tab-view" id="tab-settings">
-      <div class="hud-grid-2">
-        <div class="hud-card">
-          <h3 class="section-title">🧠 AI МОДЕЛЛЕРИ (API ГИЛТЛЕР)</h3>
-          <p class="section-sub">Gemini сервердеги `.env` гилти арқалы дәрҳал ислейди. ChatGPT, Claude ҳәм OpenRouter гилтлерин де усы жерде қосыў мүмкин.</p>
-          <div class="status-pills" id="aiStatusPills"></div>
-          <div class="form-grid">
-            <label>Gemini API гилти (қосымша)
-              <input type="password" id="keyGemini" placeholder="Сервердеги .env арқалы актив" autocomplete="off" />
-            </label>
-            <label>ChatGPT (OpenAI) API гилти
-              <input type="password" id="keyOpenAI" placeholder="sk-..." autocomplete="off" />
-            </label>
-            <label>Claude (Anthropic) API гилти
-              <input type="password" id="keyClaude" placeholder="sk-ant-..." autocomplete="off" />
-            </label>
-            <label>OpenRouter API гилти
-              <input type="password" id="keyOpenRouter" placeholder="sk-or-..." autocomplete="off" />
-            </label>
+        <div class="kpi-grid-4">
+          <div class="hud-card kpi-box">
+            <div class="mono-kicker">ЖӘМИ САЎДА</div>
+            <div class="kpi-val text-secondary" id="kpiTotalRevenue">0 сум</div>
           </div>
-          <div class="row-actions">
-            <button type="button" class="hud-btn primary sm" id="btnSaveAiKeys">Гилтлерди сақлаў</button>
+          <div class="hud-card kpi-box">
+            <div class="mono-kicker">ЧЕКЛЕР САНЫ</div>
+            <div class="kpi-val text-primary" id="kpiTotalChecks">0</div>
+          </div>
+          <div class="hud-card kpi-box">
+            <div class="mono-kicker">ОРТАША ЧЕК</div>
+            <div class="kpi-val" id="kpiAvgCheck">0 сум</div>
+          </div>
+          <div class="hud-card kpi-box">
+            <div class="mono-kicker">ҚАЙТАРЫЎЛАР</div>
+            <div class="kpi-val text-amber" id="kpiReturns">0 сум</div>
+          </div>
+        </div>
+
+        <div class="hud-grid-2">
+          <div class="hud-card">
+            <div class="panel-head">
+              <h3 class="section-title">🏥 ФИЛИАЛЛАР БОЙЫНША САЎДА</h3>
+              <button type="button" class="hud-btn secondary sm" id="btnAnalyzeSalesAI">🤖 AI ТАЛЛАЎ</button>
+            </div>
+            <div id="salesBranchesList" class="list-stack"></div>
+          </div>
+          <div class="hud-card">
+            <div class="panel-head">
+              <h3 class="section-title">🏆 САТЫЎШЫ ҚЫЗЛАР РЕЙТИНГИ</h3>
+            </div>
+            <div id="salesPharmacistsList" class="list-stack"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 3: STAFF ATTENDANCE ==================== -->
+      <section class="tab-view" id="tab-staff">
+        <div class="kpi-grid-4">
+          <div class="hud-card kpi-box">
+            <div class="mono-kicker">ЖӘМИ ҚЫЗЛАР</div>
+            <div class="kpi-val" id="attTotal">0</div>
+          </div>
+          <div class="hud-card kpi-box">
+            <div class="mono-kicker">ЖУМЫСТА</div>
+            <div class="kpi-val text-secondary" id="attPresent">0</div>
+          </div>
+          <div class="hud-card kpi-box">
+            <div class="mono-kicker">КЕШИККЕН</div>
+            <div class="kpi-val text-amber" id="attLate">0</div>
+          </div>
+          <div class="hud-card kpi-box">
+            <div class="mono-kicker">ШТРАФЛАР</div>
+            <div class="kpi-val text-red" id="attFine">0 сум</div>
           </div>
         </div>
 
         <div class="hud-card">
-          <h3 class="section-title">🔌 F-APTEKA ИНТЕГРАЦИЯ ШЛЮЗИ</h3>
-          <p class="section-sub">FOM Group тәрепинен API URL ҳәм Token берилгенде төменге киритип «Сақлаў» басың.</p>
-          <div class="form-grid">
-            <label>F-Apteka API URL
-              <input type="url" id="fAptekaUrlInput" placeholder="https://.../f-apteka/api/daily-sales" />
-            </label>
-            <label>F-Apteka API Token
-              <input type="password" id="fAptekaTokenInput" placeholder="Bearer / API Token" autocomplete="off" />
-            </label>
-            <label>Jarvis Webhook мәнзили
-              <input type="text" id="fAptekaWebhookUrl" readonly />
-            </label>
+          <div class="panel-head">
+            <h3 class="section-title">👩‍⚕️ 4 ФИЛИАЛ КЕЛИП-КЕТИЎ ТАБЕЛИ</h3>
+            <button type="button" class="hud-btn primary sm" id="btnAnalyzeStaffAI">🤖 AI ЕСАБАТ</button>
           </div>
+          <div id="staffBranchesList" class="hud-grid-2"></div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 4: COMPETITORS & IDEAS ==================== -->
+      <section class="tab-view" id="tab-ideas">
+        <div class="hud-card">
+          <div class="neon-top-line"></div>
+          <h2 class="section-title">🚀 САЎДАНЫ КӨТЕРИЎ ИДЕЯЛАРЫ &amp; СТРАТЕГИЯ</h2>
+          <p class="section-sub">Шымбай, Хожели ҳәм Нөкис филиаллары ушын Jarvis AI тәрепинен таярланатуғын әмелий усыныслар</p>
           <div class="row-actions wrap">
-            <button type="button" class="hud-btn primary sm" id="btnSaveFApteka">Сақлаў</button>
-            <button type="button" class="hud-btn secondary sm" id="btnCopyWebhook">📋 Webhook көшириў</button>
-            <button type="button" class="hud-btn ghost sm" id="btnTestFApteka">🧪 Тест синхронлаў</button>
+            <button type="button" class="hud-btn primary sm" id="btnGenIdeasPromo">🎁 Акция идеялары</button>
+            <button type="button" class="hud-btn secondary sm" id="btnGenIdeasUpsell">💬 Қызларға сатыў скрипти</button>
+            <button type="button" class="hud-btn secondary sm" id="btnGenCompetitorStrategy">🎯 Бәсекилес анализи</button>
           </div>
-        </div>
-      </div>
-
-      <div class="hud-grid-2">
-        <div class="hud-card">
-          <h3 class="section-title">🔐 ЖЕКЕ PIN-КОД ҚУЛПЫ</h3>
-          <p class="section-sub">Қосымшаны қорғаў ушын 4 санлы PIN-код орнатың.</p>
-          <div class="row-actions">
-            <input type="password" inputmode="numeric" maxlength="4" id="pinSetupInput" placeholder="4 сан (бос — өшириў)" class="inline-input" />
-            <button type="button" class="hud-btn secondary sm" id="btnSavePin">Орнатыў</button>
-          </div>
+          <div id="ideasOutput" class="ai-output hidden"></div>
         </div>
 
         <div class="hud-card">
-          <h3 class="section-title">📱 ПРОГРАММА СЫПАТЫНДА ОРНАТЫЎ</h3>
-          <p class="section-sub">Chrome/Edge-де компьютер ямаса телефон экранына жеке программа иконкасы етип орнатыў.</p>
-          <div class="row-actions">
-            <button type="button" class="hud-btn primary sm" id="btnInstallPwa">⚡ Орнатыў</button>
+          <div class="panel-head">
+            <h3 class="section-title">🏪 БӘСЕКИЛЕС (КОНКУРЕНТ) АПТЕКАЛАР</h3>
+            <button type="button" class="hud-btn secondary sm" id="btnToggleCompForm">+ Қосыў</button>
+          </div>
+
+          <form class="comp-form hidden" id="compForm">
+            <div class="form-grid">
+              <label>Аптека аты
+                <input type="text" id="compName" placeholder="Мысалы: Аптека №5" required />
+              </label>
+              <label>Қайсы филиал қасында
+                <select id="compBranch">
+                  <option value="1-Филиал (Шымбай 5-этаж)">1-Филиал (Шымбай 5-этаж)</option>
+                  <option value="2-Филиал (Шымбай Базар)">2-Филиал (Шымбай Базар)</option>
+                  <option value="3-Филиал (Хожели)">3-Филиал (Хожели)</option>
+                  <option value="4-Филиал (Нөкис)">4-Филиал (Нөкис)</option>
+                </select>
+              </label>
+              <label>Баҳа дәрежеси
+                <select id="compPrice">
+                  <option value="Арзан">Арзан</option>
+                  <option value="Орташа" selected>Орташа</option>
+                  <option value="Қымбат">Қымбат</option>
+                </select>
+              </label>
+              <label>Акция / Өзгешелиги
+                <input type="text" id="compPromos" placeholder="Мысалы: 24/7 ислейди, 5% скидка" />
+              </label>
+              <label>Күшли тәрепи
+                <input type="text" id="compStrengths" placeholder="Мысалы: ассортимент кең" />
+              </label>
+              <label>Әззи тәрепи
+                <input type="text" id="compWeaknesses" placeholder="Мысалы: гезек көп, хызмет әсте" />
+              </label>
+            </div>
+            <div class="row-actions">
+              <button type="submit" class="hud-btn primary sm">Сақлаў</button>
+              <button type="button" class="hud-btn ghost sm" id="btnCancelComp">Бийкарлаў</button>
+            </div>
+          </form>
+
+          <div id="competitorsList" class="hud-grid-2"></div>
+        </div>
+      </section>
+
+      <!-- ==================== VIEW 5: SETTINGS ==================== -->
+      <section class="tab-view" id="tab-settings">
+        <div class="hud-grid-2">
+          <div class="hud-card">
+            <h3 class="section-title">🧠 AI МОДЕЛЛЕРИ (API ГИЛТЛЕР)</h3>
+            <p class="section-sub">Gemini сервердеги `.env` гилти арқалы дәрҳал ислейди. ChatGPT, Claude ҳәм OpenRouter гилтлерин де усы жерде қосыў мүмкин.</p>
+            <div class="status-pills" id="aiStatusPills"></div>
+            <div class="form-grid">
+              <label>Gemini API гилти (қосымша)
+                <input type="password" id="keyGemini" placeholder="Сервердеги .env арқалы актив" autocomplete="off" />
+              </label>
+              <label>ChatGPT (OpenAI) API гилти
+                <input type="password" id="keyOpenAI" placeholder="sk-..." autocomplete="off" />
+              </label>
+              <label>Claude (Anthropic) API гилти
+                <input type="password" id="keyClaude" placeholder="sk-ant-..." autocomplete="off" />
+              </label>
+              <label>OpenRouter API гилти
+                <input type="password" id="keyOpenRouter" placeholder="sk-or-..." autocomplete="off" />
+              </label>
+            </div>
+            <div class="row-actions">
+              <button type="button" class="hud-btn primary sm" id="btnSaveAiKeys">Гилтлерди сақлаў</button>
+            </div>
+          </div>
+
+          <div class="hud-card">
+            <h3 class="section-title">🔌 F-APTEKA ИНТЕГРАЦИЯ ШЛЮЗИ</h3>
+            <p class="section-sub">FOM Group тәрепинен API URL ҳәм Token берилгенде төменге киритип «Сақлаў» басың.</p>
+            <div class="form-grid">
+              <label>F-Apteka API URL
+                <input type="url" id="fAptekaUrlInput" placeholder="https://.../f-apteka/api/daily-sales" />
+              </label>
+              <label>F-Apteka API Token
+                <input type="password" id="fAptekaTokenInput" placeholder="Bearer / API Token" autocomplete="off" />
+              </label>
+              <label>Jarvis Webhook мәнзили
+                <input type="text" id="fAptekaWebhookUrl" readonly />
+              </label>
+            </div>
+            <div class="row-actions wrap">
+              <button type="button" class="hud-btn primary sm" id="btnSaveFApteka">Сақлаў</button>
+              <button type="button" class="hud-btn secondary sm" id="btnCopyWebhook">📋 Webhook көшириў</button>
+              <button type="button" class="hud-btn ghost sm" id="btnTestFApteka">🧪 Тест синхронлаў</button>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
 
-  <!-- ==================== FIXED BOTTOM COMMAND CONSOLE ==================== -->
-  <aside class="console-dock">
-    <div class="led-bar" id="ledBar" aria-hidden="true"></div>
-    <div class="dock-inner">
-      <div class="macro-row">
-        <div class="macro-buttons">
-          <span class="macro-label">TELEMETRY MACROS:</span>
-          <button type="button" class="macro-btn" data-prompt="Бүгинги 4 филиалдың келип-кетиў ҳәм саўда жағдайы бойынша қысқа есабат бер.">Filiallar esabatı</button>
-          <button type="button" class="macro-btn" data-prompt="Қызлардың бүгинги келип-кетиў табелин таллап, ким кешиккенин ҳәм қандай шара көриў кереклигин айт.">Qızlar tabeli</button>
-          <button type="button" class="macro-btn" data-prompt="F-Apteka саўдасын ҳәм орташа чекти көтериў ушын бүгин қолланыўға болатуғын 5 нақты идея бер.">Sawdanı kóteriw</button>
-          <button type="button" class="macro-btn" data-prompt="Бәсекилес аптекаларды таллап, PINTOK APTEKA клиентлерин көбейтиў стратегиясын дүз.">Básekiles analizi</button>
-          <button type="button" class="macro-btn clear" id="btnClearChat">Тазалаў</button>
-        </div>
-        <div class="sys-stats">
-          <span>SYS_LATENCY: 14ms</span>
-          <span>·</span>
-          <span class="buff-ok">BUFF_LOCK: OK</span>
-        </div>
-      </div>
+        <div class="hud-grid-2">
+          <div class="hud-card">
+            <h3 class="section-title">🔐 ЖЕКЕ PIN-КОД ҚУЛПЫ</h3>
+            <p class="section-sub">Қосымшаны қорғаў ушын 4 санлы PIN-код орнатың.</p>
+            <div class="row-actions">
+              <input type="password" inputmode="numeric" maxlength="4" id="pinSetupInput" placeholder="4 сан (бос — өшириў)" class="inline-input" />
+              <button type="button" class="hud-btn secondary sm" id="btnSavePin">Орнатыў</button>
+            </div>
+          </div>
 
-      <form class="terminal-form" id="chatForm">
-        <button type="button" class="mic-btn" id="btnVoice" title="Даўыс пенен буйрық бериў">
-          <span class="material-symbols-outlined">mic</span>
-        </button>
-        <div class="terminal-input-wrap">
-          <span class="prompt-prefix">&gt;_</span>
-          <input type="text" id="chatInput" placeholder="J.A.R.V.I.S. ga buyruq bering..." autocomplete="off" />
-          <span class="col-tag" id="cursorPosTag">LN:01 COL:00</span>
+          <div class="hud-card">
+            <h3 class="section-title">📱 ПРОГРАММА СЫПАТЫНДА ОРНАТЫЎ</h3>
+            <p class="section-sub">Chrome/Edge-де компьютер ямаса телефон экранына жеке программа иконкасы етип орнатыў.</p>
+            <div class="row-actions">
+              <button type="button" class="hud-btn primary sm" id="btnInstallPwa">⚡ Орнатыў</button>
+            </div>
+          </div>
         </div>
-        <button type="submit" class="execute-btn" id="btnSend">
-          <span class="material-symbols-outlined ico-sm">terminal</span>
-          <span>EXECUTE [ENTER]</span>
-        </button>
-      </form>
-    </div>
-  </aside>
+      </section>
+    </main>
+
+    <!-- ==================== ANCHORED BOTTOM COMMAND CONSOLE ==================== -->
+    <aside class="console-dock">
+      <div class="led-bar" id="ledBar" aria-hidden="true"></div>
+      <div class="dock-inner">
+        <div class="macro-row">
+          <div class="macro-buttons">
+            <span class="macro-label">TELEMETRY MACROS:</span>
+            <button type="button" class="macro-btn" data-prompt="Бүгинги 4 филиалдың келип-кетиў ҳәм саўда жағдайы бойынша қысқа есабат бер.">Filiallar esabatı</button>
+            <button type="button" class="macro-btn" data-prompt="Қызлардың бүгинги келип-кетиў табелин таллап, ким кешиккенин ҳәм қандай шара көриў кереклигин айт.">Qızlar tabeli</button>
+            <button type="button" class="macro-btn" data-prompt="F-Apteka саўдасын ҳәм орташа чекти көтериў ушын бүгин қолланыўға болатуғын 5 нақты идея бер.">Sawdanı kóteriw</button>
+            <button type="button" class="macro-btn" data-prompt="Бәсекилес аптекаларды таллап, PINTOK APTEKA клиентлерин көбейтиў стратегиясын дүз.">Básekiles analizi</button>
+            <button type="button" class="macro-btn clear" id="btnClearChat">Тазалаў</button>
+          </div>
+          <div class="sys-stats">
+            <span>SYS_LATENCY: 14ms</span>
+            <span>·</span>
+            <span class="buff-ok">BUFF_LOCK: OK</span>
+          </div>
+        </div>
+
+        <form class="terminal-form" id="chatForm">
+          <button type="button" class="mic-btn" id="btnVoice" title="Даўыс пенен буйрық бериў">
+            <svg class="svg-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+          <div class="terminal-input-wrap">
+            <span class="prompt-prefix">&gt;_</span>
+            <input type="text" id="chatInput" placeholder="J.A.R.V.I.S. ga buyruq bering..." autocomplete="off" />
+            <span class="col-tag" id="cursorPosTag">LN:01 COL:00</span>
+          </div>
+          <button type="submit" class="execute-btn" id="btnSend">
+            <svg class="svg-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            <span>EXECUTE [ENTER]</span>
+          </button>
+        </form>
+      </div>
+    </aside>
+  </div>
 
   <!-- Toast хабарнама -->
   <div class="toast hidden" id="toast"></div>
 
-  <script src="jarvis.js?v=4.2"></script>
+  <script src="jarvis.js?v=4.3"></script>
 </body>
 </html>
