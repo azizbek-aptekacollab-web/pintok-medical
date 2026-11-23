@@ -1,5 +1,5 @@
-// Service Worker для мобильного приложения сети аптек «Пинток Медикал»
-const CACHE_NAME = 'pintok-medical-pwa-v2';
+// Service Worker для сети аптек «Пинток Медикал» и J.A.R.V.I.S. AI
+const CACHE_NAME = 'pintok-medical-pwa-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -16,40 +16,41 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch(err => console.log('Кэширование частичных ассетов', err));
+      return cache.addAll(ASSETS_TO_CACHE).catch(() => {});
     }).then(() => self.skipWaiting())
   );
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((key) => (key !== CACHE_NAME ? caches.delete(key) : null)))
+    ).then(() => self.clients.claim())
   );
 });
 
+// Network-First so UI updates always appear immediately
 self.addEventListener('fetch', (e) => {
   const reqUrl = new URL(e.request.url);
-  if (e.request.method !== 'GET' || reqUrl.pathname.startsWith('/api/')) {
+  if (e.request.method !== 'GET' || reqUrl.pathname.startsWith('/api/') || reqUrl.pathname === '/health') {
     return;
   }
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(e.request).catch(() => {
-        if (e.request.destination === 'document') {
-          return caches.match(reqUrl.pathname.includes('jarvis') ? './jarvis.html' : './index.html');
+    fetch(e.request)
+      .then((networkRes) => {
+        if (networkRes && networkRes.status === 200 && reqUrl.origin === self.location.origin) {
+          const clone = networkRes.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone)).catch(() => {});
         }
-      });
-    })
+        return networkRes;
+      })
+      .catch(() =>
+        caches.match(e.request).then((cached) => {
+          if (cached) return cached;
+          if (e.request.destination === 'document') {
+            return caches.match(reqUrl.pathname.includes('jarvis') ? './jarvis.html' : './index.html');
+          }
+        })
+      )
   );
 });

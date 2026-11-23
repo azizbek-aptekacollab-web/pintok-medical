@@ -941,7 +941,11 @@
   }
 
   function initPwaInstall() {
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then((reg) => {
+        if (reg && typeof reg.update === 'function') reg.update().catch(() => {});
+      }).catch(() => {});
+    }
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       state.deferredInstallPrompt = e;
