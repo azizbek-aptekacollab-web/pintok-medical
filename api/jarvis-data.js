@@ -73,8 +73,9 @@ function buildAttendanceSnapshot(dateStr) {
   let totalAbsent = 0;
   let totalFine = 0;
 
-  for (const [empId, emp] of Object.entries(employeesMap)) {
+  for (const [mapKey, emp] of Object.entries(employeesMap)) {
     if (!emp || emp.archived) continue;
+    const empId = emp.id || mapKey;
     const bId = emp.workplaceId || emp.branchId || 'branch_1';
     if (!branchMap[bId]) {
       branchMap[bId] = {
@@ -93,7 +94,7 @@ function buildAttendanceSnapshot(dateStr) {
       };
     }
 
-    const rec = dayRecords[empId] || null;
+    const rec = dayRecords[empId] || dayRecords[mapKey] || null;
     const isSick = Boolean(
       emp.onSickLeave || (emp.sickLeave && emp.sickLeave.active) || (rec && rec.isSickLeave)
     );
