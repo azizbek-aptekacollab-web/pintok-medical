@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <defs>
+    <linearGradient id="pintokGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16a34a" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="pintokLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e" />
+      <stop offset="100%" stop-color="#16a34a" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#059669" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Outer White Circle Badge -->
+  <circle cx="120" cy="120" r="110" fill="#ffffff" stroke="url(#pintokGreen)" stroke-width="8" filter="url(#shadow)" />
+  <circle cx="120" cy="120" r="96" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2" />
+
+  <!-- Medical Cross in Green -->
+  <g filter="url(#shadow)">
+    <rect x="98" y="48" width="44" height="114" rx="14" fill="url(#pintokGreen)" />
+    <rect x="63" y="83" width="114" height="44" rx="14" fill="url(#pintokGreen)" />
+  </g>
+
+  <!-- White Inner Heart/Leaf Accent inside Cross Center -->
+  <path d="M120 92 C127 84, 140 89, 140 100 C140 112, 120 123, 120 123 C120 123, 100 112, 100 100 C100 89, 113 84, 120 92 Z" fill="#ffffff" />
+
+  <!-- Bottom Banner Text "PINTOK" -->
+  <rect x="46" y="172" width="148" height="34" rx="17" fill="url(#pintokLight)" />
+  <text x="120" y="195" font-family="'Segoe UI', Arial, sans-serif" font-size="20" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="2.5">PINTOK</text>
+</svg>
