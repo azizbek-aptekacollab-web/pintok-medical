@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>«Пинток» Аптекасы — Касса ушын QR-код стенди (4 Филиал)</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
+    body {
+      margin: 0; padding: 24px;
+      background: #f0fdf4; color: #0f172a;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .toolbar {
+      max-width: 540px; width: 100%;
+      background: #ffffff; border: 2px solid #bbf7d0;
+      border-radius: 18px; padding: 18px; margin-bottom: 20px;
+      box-shadow: 0 4px 14px rgba(22,163,74,0.08);
+    }
+    .toolbar label { font-size: 13.5px; font-weight: 800; color: #065f46; display: block; margin-bottom: 6px; }
+    .toolbar input, .toolbar select {
+      width: 100%; padding: 10px 12px; border: 1.5px solid #86efac;
+      border-radius: 10px; font-size: 14px; margin-bottom: 12px; font-weight: 600;
+    }
+    .hint-box {
+      background: #dcfce7; border: 1px solid #86efac; color: #065f46;
+      padding: 10px 12px; border-radius: 10px; font-size: 13px; font-weight: 600;
+      margin-bottom: 12px; line-height: 1.4;
+    }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      background: #16a34a; color: #fff; border: none;
+      padding: 11px 16px; border-radius: 10px; font-weight: 700;
+      cursor: pointer; font-size: 14px; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .poster {
+      max-width: 460px; width: 100%;
+      background: #ffffff;
+      border: 6px solid #16a34a;
+      border-radius: 28px;
+      padding: 28px 24px;
+      text-align: center;
+      box-shadow: 0 18px 40px rgba(22,163,74,0.18);
+      position: relative;
+    }
+    .poster-logo {
+      width: 100px; height: 100px; margin: 0 auto 12px;
+      border-radius: 22px; object-fit: cover; border: 2px solid #bbf7d0;
+    }
+    .branch-pill {
+      display: inline-block;
+      background: #dcfce7; color: #065f46;
+      font-size: 13px; font-weight: 800;
+      padding: 5px 14px; border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    .poster-title {
+      font-size: 25px; font-weight: 900; color: #065f46; margin: 0 0 8px; line-height: 1.25;
+    }
+    .poster-sub {
+      font-size: 15px; color: #334155; font-weight: 600; margin: 0 0 18px; line-height: 1.4;
+    }
+    .qr-frame {
+      display: inline-block;
+      padding: 16px;
+      background: #ffffff;
+      border: 3px dashed #16a34a;
+      border-radius: 24px;
+      margin-bottom: 14px;
+    }
+    .qr-frame img {
+      width: 240px; height: 240px; display: block;
+    }
+    .qr-url-preview {
+      font-size: 12.5px; color: #475569; font-weight: 700;
+      margin-bottom: 14px; word-break: break-all;
+    }
+    .steps {
+      background: #dcfce7; color: #065f46;
+      padding: 12px 16px; border-radius: 16px;
+      font-size: 14px; font-weight: 800;
+      margin-bottom: 16px;
+    }
+    .footer-info {
+      display: flex; justify-content: space-around; flex-wrap: wrap;
+      gap: 10px; font-size: 15px; font-weight: 800; color: #065f46;
+      border-top: 2px solid #bbf7d0; padding-top: 14px;
+    }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .toolbar { display: none; }
+      .poster { box-shadow: none; margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="hint-box">
+      ✅ <b>Телефоннан сканерлеў ушын:</b> Телефоныңыз компьютер менен бир Wi-Fi тармағында турған болса, төмендеги <code>http://192.168.0.157:8090/index.html</code> адреси телефон камерасынан сканерлегенде дәрҳал ашылады!
+    </div>
+
+    <label>🏥 Қайсы филиал ушын QR-код шығарасыз?</label>
+    <select id="branchSelect" onchange="updateQR()">
+      <option value="">Барлық 4 филиал (Қарыйдар өзи таңлайды)</option>
+      <option value="1">1-Филиал — Шымбай (5-этажлы Емлеўхана қасында)</option>
+      <option value="2">2-Филиал — Шымбай (Орайлық Базар ишинде)</option>
+      <option value="3">3-Филиал — Хожели (Емлеўхана қарама-қарсы)</option>
+      <option value="4">4-Филиал — Нөкис (Городской Больница қарама-қарсы)</option>
+    </select>
+
+    <label>🌐 Сайт силтемеси (24/7 өшпейтуғын турақлы адрес):</label>
+    <input type="text" id="siteUrlInput" value="https://pintok-medical.vercel.app/otziv" oninput="updateQR()" />
+
+    <div class="btn-row">
+      <button class="btn" onclick="window.print()">🖨 Принтерден шығарыў (Печать)</button>
+      <a class="btn" id="openSiteBtn" style="background:#059669;" href="https://pintok-medical.vercel.app/otziv" target="_blank">📱 Сайтты ҳәзир ашып көриў</a>
+    </div>
+  </div>
+
+  <div class="poster">
+    <img class="poster-logo" src="logo-apteka.jpg" alt="Pintok Logo" onerror="this.onerror=null; this.src='logo.svg';" />
+    <div class="branch-pill" id="posterBranchBadge">💊 ПИНТОК АПТЕКАСЫ — 4 ФИЛИАЛ</div>
+    <h1 class="poster-title">ПИНТОК АПТЕКАСЫНА<br/>ХОШ КЕЛДИҢИЗ!</h1>
+    <p class="poster-sub">
+      Шағым (Жалоба), Усыныс (Предложение) қалдырыў ушын телефон камерасы арқалы QR-кодты сканерлең:
+    </p>
+
+    <div class="qr-frame">
+      <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=12&format=jpg&color=065f46&bgcolor=ffffff&data=https%3A%2F%2Fpintok-medical.vercel.app%2Fotziv" alt="QR Code" />
+    </div>
+    <div class="qr-url-preview" id="qrUrlPreview">https://pintok-medical.vercel.app/otziv</div>
+
+    <div class="steps">
+      ❗ Жалоба (Шағым) &nbsp;•&nbsp; 💡 Предложение (Усыныс)
+    </div>
+
+    <div class="footer-info">
+      <span>📞 +998 93 076 31 33</span>
+      <span>📸 @pintok_apteka</span>
+    </div>
+  </div>
+
+  <script>
+    function updateQR() {
+      let baseUrl = document.getElementById('siteUrlInput').value.trim() || 'https://pintok-medical.vercel.app/otziv';
+      const branch = document.getElementById('branchSelect').value;
+      const badge = document.getElementById('posterBranchBadge');
+
+      const branchNames = {
+        "": "💊 ПИНТОК АПТЕКАСЫ — 4 ФИЛИАЛ",
+        "1": "🏥 1-ФИЛИАЛ — ШЫМБАЙ (ЕМЛЕЎХАНА ҚАСЫНДА)",
+        "2": "🏪 2-ФИЛИАЛ — ШЫМБАЙ (БАЗАР ИШИНДЕ)",
+        "3": "🏥 3-ФИЛИАЛ — ХОЖЕЛИ (ЕМЛЕЎХАНА ҚАРСЫСЫ)",
+        "4": "🏥 4-ФИЛИАЛ — НӨКИС (ГОР. БОЛЬНИЦА ҚАРСЫСЫ)"
+      };
+      badge.textContent = branchNames[branch] || branchNames[""];
+
+      let finalUrl = baseUrl.split('?')[0];
+      if (branch) {
+        finalUrl += '?branch=' + branch;
+      }
+
+      document.getElementById('qrUrlPreview').textContent = finalUrl;
+      document.getElementById('openSiteBtn').href = finalUrl;
+      document.getElementById('qrImage').src =
+        'https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=12&format=jpg&color=065f46&bgcolor=ffffff&data=' +
+        encodeURIComponent(finalUrl);
+    }
+  </script>
+</body>
+</html>
